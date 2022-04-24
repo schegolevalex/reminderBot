@@ -15,9 +15,15 @@ public class AppConfiguration {
 
     @Bean
     public ReminderBot reminderBot() throws TelegramApiException {
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-        telegramBotsApi.registerBot() {
-
-        }
+        return new ReminderBot();
     }
+
+    @Bean
+    public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+        telegramBotsApi.registerBot(reminderBot());
+        return telegramBotsApi;
+    }
+
+
 }

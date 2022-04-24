@@ -6,15 +6,15 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-@Component
 public class ReminderBot extends TelegramLongPollingBot {
     @Autowired
     BotConfiguration botConfiguration;
 
     @Override
     public String getBotUsername() {
-        return botConfiguration.getName();
+        return botConfiguration.getUsername();
     }
 
     @Override
@@ -28,5 +28,10 @@ public class ReminderBot extends TelegramLongPollingBot {
         String message = update.getMessage().getText();
 
         SendMessage sendMessage = new SendMessage(chatId, message);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

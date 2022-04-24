@@ -9,5 +9,4 @@ public class ReminderBotApplication {
     public static void main(String[] args) {
         SpringApplication.run(ReminderBotApplication.class, args);
     }
-
 }

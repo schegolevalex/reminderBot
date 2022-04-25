@@ -11,17 +11,20 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Configuration
 public class AppConfiguration {
     @Autowired
-    BotConfiguration botConfiguration;
+    private BotConfiguration botConfiguration;
+
+    @Autowired
+    private ReminderBot bot;
 
     @Bean
-    public ReminderBot reminderBot() throws TelegramApiException {
-        return new ReminderBot();
-    }
-
-    @Bean
-    public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-        telegramBotsApi.registerBot(reminderBot());
+    public TelegramBotsApi telegramBotsApi() {
+        TelegramBotsApi telegramBotsApi = null;
+        try {
+            telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+            telegramBotsApi.registerBot(bot);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
         return telegramBotsApi;
     }
 

@@ -2,17 +2,30 @@ package com.schegolevalex.bot.reminderbot.handlers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
+import com.schegolevalex.bot.reminderbot.entities.Reminder;
+import com.schegolevalex.bot.reminderbot.services.ReminderServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class CallbackHandler implements Handler {
     private static CallbackHandler instance;
 
+    private ReminderServiceImpl reminderService;
+
     private CallbackHandler() {
+    }
+
+    @Autowired
+    private CallbackHandler(ReminderServiceImpl reminderService) {
+        this.reminderService = reminderService;
     }
 
     @Override
@@ -40,8 +53,16 @@ public class CallbackHandler implements Handler {
     }
 
     private BotApiMethod<?> allReminder(Update update) {
-        System.out.println("*********Show all reminders*********");
-        return null; //TODO
+        List<Reminder> reminders = reminderService.getAllRemindersById(AbilityUtils.getChatId(update));
+        StringBuilder text = new StringBuilder(Constant.MY_REMINDERS);
+        for (Reminder reminder : reminders) {
+            text.append(reminder.getDate() + " " + reminder.getTime() + " " + reminder.getText() + "\n");
+        }
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(String.valueOf(AbilityUtils.getChatId(update)));
+        sendMessage.setText(String.valueOf(text));
+
+        return sendMessage;
     }
 
     public static CallbackHandler getInstance() {

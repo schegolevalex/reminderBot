@@ -6,8 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class HandlerFactory {
 
-    public Handler getHandler (Update update) {
-        Handler handler = null;
+    public Handler getHandler(Update update) {
 
         if (update.hasCallbackQuery())
             return CallbackHandler.getInstance();
@@ -15,9 +14,9 @@ public class HandlerFactory {
         if (update.hasMessage() && update.getMessage().isCommand())
             return CommandHandler.getInstance();
 
-        if (update.hasMessage() && update.getMessage().hasText())
+        if (update.hasMessage() && update.getMessage().hasText()) {
             return TextHandler.getInstance();
+        } else return null;
 
-        return handler;
     }
 }

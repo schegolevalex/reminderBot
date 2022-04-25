@@ -23,7 +23,7 @@ public class TextHandler implements Handler {
 
     private TextHandler() {
     }
-
+    @Autowired
     private TextHandler(Map<Long, Reminder> reminders, ReminderService reminderService) {
         this.reminders = reminders;
         this.reminderService = reminderService;

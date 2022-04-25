@@ -4,6 +4,8 @@ import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.repositories.ReminderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +40,10 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public void deleteReminder(long id) {
         reminderRepository.deleteById(id);
+    }
+
+    public List<Reminder> getAllRemindersById(Long chatId) {
+        List<Reminder> reminders = reminderRepository.findRemindersByChatID(chatId);
+        return reminders;
     }
 }

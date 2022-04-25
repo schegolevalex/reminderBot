@@ -13,6 +13,7 @@ public interface Constant {
     String REMINDER_DESCRIPTION_TEXT = "Напишите, о чем Вам напомнить?";
     String REMINDER_DESCRIPTION_DATE = "Когда Вам напомнить? Введите дату в формате ГГГГ.ММ.ДД:";
     String REMINDER_DESCRIPTION_TIME = "Во сколько Вам напомнить? Введите время в формате ЧЧ:ММ:CC";
+    String MY_REMINDERS = "Ваши напоминания:" + "\n";
 
 
     //    для колбэков кнопок

@@ -1,17 +1,25 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.config.BotConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.springframework.web.client.RestTemplate;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import javax.annotation.PostConstruct;
 
 @Component
-public class ReminderBot extends TelegramLongPollingBot {
-    @Autowired
-    BotConfiguration botConfiguration;
+public class ReminderBot extends TelegramWebhookBot {
+
+    private final BotConfiguration botConfiguration;
+    private final RestTemplate restTemplate;
+
+    public ReminderBot(BotConfiguration botConfiguration, RestTemplate restTemplate) {
+        this.botConfiguration = botConfiguration;
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     public String getBotUsername() {
@@ -24,15 +32,22 @@ public class ReminderBot extends TelegramLongPollingBot {
     }
 
     @Override
-    public void onUpdateReceived(Update update) {
+    public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         String chatId = String.valueOf(update.getMessage().getChatId());
         String message = update.getMessage().getText();
 
         SendMessage sendMessage = new SendMessage(chatId, message);
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+        return sendMessage;
+    }
+
+    @Override
+    public String getBotPath() {
+        return botConfiguration.getWebhookPath();
+    }
+
+    @PostConstruct
+    private void setOwnWebhook() {
+        System.out.println(restTemplate.getForEntity("https://api.telegram.org/bot" + botConfiguration.getBotToken() + "/deletewebhook", String.class));
+        System.out.println(restTemplate.getForEntity("https://api.telegram.org/bot" + botConfiguration.getBotToken() + "/setwebhook?url=" + botConfiguration.getWebhookPath(), String.class));
     }
 }

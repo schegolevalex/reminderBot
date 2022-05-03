@@ -1,11 +1,11 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.config.BotConfiguration;
+import com.schegolevalex.bot.reminderbot.handlers.ResponseHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.annotation.PostConstruct;
@@ -16,9 +16,12 @@ public class ReminderBot extends TelegramWebhookBot {
     private final BotConfiguration botConfiguration;
     private final RestTemplate restTemplate;
 
-    public ReminderBot(BotConfiguration botConfiguration, RestTemplate restTemplate) {
+    private final ResponseHandler responseHandler;
+
+    public ReminderBot(BotConfiguration botConfiguration, RestTemplate restTemplate, ResponseHandler responseHandler) {
         this.botConfiguration = botConfiguration;
         this.restTemplate = restTemplate;
+        this.responseHandler = responseHandler;
     }
 
     @Override
@@ -33,11 +36,12 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        String chatId = String.valueOf(update.getMessage().getChatId());
-        String message = update.getMessage().getText();
-
-        SendMessage sendMessage = new SendMessage(chatId, message);
-        return sendMessage;
+        return responseHandler.onUpdateReceiver(update);
+//        String chatId = String.valueOf(update.getMessage().getChatId());
+//        String message = update.getMessage().getText();
+//
+//        SendMessage sendMessage = new SendMessage(chatId, message);
+//        return sendMessage;
     }
 
     @Override

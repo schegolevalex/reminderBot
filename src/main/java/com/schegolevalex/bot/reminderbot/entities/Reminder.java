@@ -1,4 +1,4 @@
-package entities;
+package com.schegolevalex.bot.reminderbot.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

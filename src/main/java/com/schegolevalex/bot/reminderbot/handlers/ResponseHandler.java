@@ -3,6 +3,7 @@ package com.schegolevalex.bot.reminderbot.handlers;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 
@@ -14,7 +15,9 @@ public class ResponseHandler {
         if (update.hasCallbackQuery()) {
             return handleMessageWithCallback(update);
         }
-        if (update.getMessage().getText().startsWith("/")) {
+        if (update.getMessage().hasEntities() &&
+                update.getMessage().getEntities().stream()
+                        .anyMatch(entity -> entity.getType().equals("bot_command"))) {
             return handleMessageWithCommand(update);
         }
         if (update.getMessage().hasText()) {
@@ -30,6 +33,12 @@ public class ResponseHandler {
     }
 
     private BotApiMethod<?> handleMessageWithCommand(Update update) {
+        if (update.getMessage().getText().equals("/start")) {
+            SendMessage sendMessage = new SendMessage(String.valueOf(update.getMessage().getChatId()), "Привет!");
+            return sendMessage;
+        }
+
+
         return null;
     }
 

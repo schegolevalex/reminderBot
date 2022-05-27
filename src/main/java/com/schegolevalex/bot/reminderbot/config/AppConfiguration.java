@@ -14,10 +14,10 @@ import java.util.Map;
 @ComponentScan(basePackages = "com.schegolevalex.bot.reminderbot")
 public class AppConfiguration {
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+//    @Bean
+//    public RestTemplate restTemplate() {
+//        return new RestTemplate();
+//    }
 
     @Bean
     public Map<Long, UserState> statesDB() {

@@ -2,30 +2,35 @@ package com.schegolevalex.bot.reminderbot.handlers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
+import com.schegolevalex.bot.reminderbot.entities.Reminder;
+import com.schegolevalex.bot.reminderbot.services.ReminderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.EntityType;
-import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Timestamp;
 import java.util.Map;
 
-
 @Component
+@Scope("prototype")
 public class ResponseHandler {
 
     private Map<Long, UserState> statesDB;
+    private ReminderServiceImpl reminderService;
+
+    private Reminder reminder;
+
+    private String date;
 
     @Autowired
-    private ResponseHandler(Map<Long, UserState> statesDB) {
-        this.statesDB = statesDB;
+    private ResponseHandler(Map<Long, UserState> statesDB, ReminderServiceImpl reminderService) {
+        this.statesDB = statesDB; // возможно в будущем можно будет отказаться от внедрения этого объекта спрингом, при условии, что мапа состояний не понадобиться нигде дальше
+        this.reminderService = reminderService;
     }
 
-    // главный обработчик входящего апдейта
     public BotApiMethod<?> onUpdateReceiver(Update update) {
         if (update.hasCallbackQuery())
             return handleMessageWithCallback(update);
@@ -39,7 +44,6 @@ public class ResponseHandler {
         return new SendMessage(String.valueOf(update.getMessage().getChatId()), Constant.UNKNOWN_REQUEST);
     }
 
-    //    обработчик апдейта с колбэком кнопок
     private BotApiMethod<?> handleMessageWithCallback(Update update) {
         switch (update.getCallbackQuery().getData()) {
             case (Constant.GO_TO_MY_REMINDERS):
@@ -58,7 +62,6 @@ public class ResponseHandler {
         }
     }
 
-    //    обработчик апдейта с командой
     private BotApiMethod<?> handleMessageWithCommand(Update update) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
@@ -101,29 +104,32 @@ public class ResponseHandler {
 
         sendMessage.setChatId(String.valueOf(chatID));
 
+        if (statesDB.get(chatID) == UserState.ADDING_REMINDER_DATE) {
+            date = update.getMessage().getText();
+        }
+
         switch (statesDB.get(chatID)) {
             case ADDING_REMINDER:
+                reminder = new Reminder();
+                reminder.setChatID(chatID);
                 sendMessage.setText(Constant.REMINDER_DESCRIPTION_TEXT);
                 statesDB.put(chatID, UserState.ADDING_REMINDER_TEXT);
                 break;
 
             case ADDING_REMINDER_TEXT:
-                System.out.println("*********Add text to DB*********");
-                //TODO
+                reminder.setText(update.getMessage().getText());
                 sendMessage.setText(Constant.REMINDER_DESCRIPTION_DATE);
                 statesDB.put(chatID, UserState.ADDING_REMINDER_DATE);
                 break;
 
             case ADDING_REMINDER_DATE:
-                System.out.println("*********Add date to DB*********");
-                //TODO
                 sendMessage.setText(Constant.REMINDER_DESCRIPTION_TIME);
                 statesDB.put(chatID, UserState.ADDING_REMINDER_TIME);
                 break;
 
             case ADDING_REMINDER_TIME:
-                System.out.println("*********Add time to DB*********");
-                //TODO
+                reminder.setDate(Timestamp.valueOf(date + " " + update.getMessage().getText()));
+                reminderService.saveReminder(reminder);
                 statesDB.put(chatID, UserState.CHOOSING_FIRST_ACTION);
                 return addReminder(update);
 

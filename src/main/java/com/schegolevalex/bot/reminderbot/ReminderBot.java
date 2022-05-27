@@ -14,7 +14,6 @@ import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +23,16 @@ import java.util.Map;
 public class ReminderBot extends TelegramWebhookBot {
 
     private final BotConfiguration botConfiguration;
-    private final RestTemplate restTemplate;
+//    private final RestTemplate restTemplate;
     private final ResponseHandler responseHandler;
 
     private Map<Long, UserState> statesDB;
 
     @Autowired
-    public ReminderBot(BotConfiguration botConfiguration, RestTemplate restTemplate,
+    public ReminderBot(BotConfiguration botConfiguration, /*RestTemplate restTemplate,*/
                        ResponseHandler responseHandler, Map <Long, UserState> statesDB) {
         this.botConfiguration = botConfiguration;
-        this.restTemplate = restTemplate;
+//        this.restTemplate = restTemplate;
         this.responseHandler = responseHandler;
         this.statesDB = statesDB;
     }

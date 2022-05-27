@@ -9,11 +9,10 @@ public interface Constant {
 
     String CHAT_STATES = "Состояния чата";
 
-    String START_DESCRIPTION = "Привет, я ReminderBot, я помогу тебе не забыть о важных делах. Давай начнем!";
-    String MAIN_DESCRIPTION = "Выберите действие:";
+    String START_DESCRIPTION = "Выберите действие:";
     String REMINDER_DESCRIPTION_TEXT = "Напишите, о чем Вам напомнить?";
     String REMINDER_DESCRIPTION_DATE = "Когда Вам напомнить? Введите дату в формате ГГГГ.ММ.ДД:";
-    String REMINDER_DESCRIPTION_TIME = "Во сколько Вам напомнить? Введите время в формате ЧЧ.ММ:";
+    String REMINDER_DESCRIPTION_TIME = "Во сколько Вам напомнить? Введите время в формате ЧЧ:ММ:CC";
 
 
     //    для колбэков кнопок

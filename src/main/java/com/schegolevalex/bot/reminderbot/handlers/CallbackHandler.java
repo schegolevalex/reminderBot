@@ -9,6 +9,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class CallbackHandler implements Handler {
+    private static CallbackHandler instance;
+
+    private CallbackHandler() {
+    }
+
     @Override
     public BotApiMethod<?> handle(Update update) {
         switch (update.getCallbackQuery().getData()) {
@@ -31,5 +36,12 @@ public class CallbackHandler implements Handler {
     private BotApiMethod<?> allReminder(Update update) {
         System.out.println("*********Show all reminders*********");
         return null; //TODO
+    }
+
+    public static CallbackHandler getInstance() {
+        if (instance == null) {
+            instance = new CallbackHandler();
+        }
+        return instance;
     }
 }

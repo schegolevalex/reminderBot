@@ -8,7 +8,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
-public class CommandHandler implements Handler{
+public class CommandHandler implements Handler {
+    private static CommandHandler instance;
+
+    private CommandHandler() {
+    }
+
     @Override
     public BotApiMethod<?> handle(Update update) {
         SendMessage sendMessage = new SendMessage();
@@ -31,5 +36,13 @@ public class CommandHandler implements Handler{
                 break;
         }
 
-        return sendMessage;    }
+        return sendMessage;
+    }
+
+    public static CommandHandler getInstance() {
+        if (instance == null) {
+            instance = new CommandHandler();
+        }
+        return instance;
+    }
 }

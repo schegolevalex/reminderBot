@@ -20,6 +20,6 @@ public interface Constant {
     String GO_TO_MY_REMINDERS = "Мои напоминания /reminders";
     String GO_TO_ADD_REMINDER = "Добавить напоминание /addReminder";
 
-    String UNKNOWN_REQUEST = "Не понимаю... Давайте заново.";
+    String UNKNOWN_REQUEST = "Не понимаю... Давай заново. Жми /start";
     String SUCCESSFUL_ADDITION = "Напоминание успешно создано";
 }

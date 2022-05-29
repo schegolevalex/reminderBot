@@ -11,6 +11,11 @@ import java.sql.Timestamp;
 
 @Component
 public class TextHandler implements Handler {
+    private static TextHandler instance;
+
+    private TextHandler() {
+    }
+
     @Override
     public BotApiMethod<?> handle(Update update) {
         SendMessage sendMessage = new SendMessage();
@@ -57,5 +62,13 @@ public class TextHandler implements Handler {
                 update.getMessage().setText("/start");
                 return handleMessageWithCommand(update);
         }
-        return sendMessage;    }
+        return sendMessage;
+    }
+
+    public static TextHandler getInstance() {
+        if (instance == null) {
+            instance = new TextHandler();
+        }
+        return instance;
+    }
 }

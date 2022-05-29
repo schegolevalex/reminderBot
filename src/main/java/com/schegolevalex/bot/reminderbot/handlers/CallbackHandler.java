@@ -3,6 +3,7 @@ package com.schegolevalex.bot.reminderbot.handlers;
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import org.springframework.stereotype.Component;
+import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -15,22 +16,27 @@ public class CallbackHandler implements Handler {
     }
 
     @Override
-    public BotApiMethod<?> handle(Update update) {
+    public BotApiMethod<?> handle(Update update, UserState state) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(String.valueOf(AbilityUtils.getChatId(update)));
+
         switch (update.getCallbackQuery().getData()) {
             case (Constant.GO_TO_MY_REMINDERS):
-                statesDB.put(update.getCallbackQuery().getMessage().getChatId(), UserState.WATCHING_REMINDERS);
+                state = UserState.WATCHING_REMINDERS; //заглушка, осталось от старого, переписать TODO
                 return allReminder(update);
 
             case (Constant.GO_TO_ADD_REMINDER):
-                statesDB.put(update.getCallbackQuery().getMessage().getChatId(), UserState.ADDING_REMINDER);
-                return addReminder(update);
+                sendMessage.setText(Constant.REMINDER_DESCRIPTION_TEXT);
+                state = UserState.ADDING_REMINDER_TEXT;
+                break;
 
             default:
-                SendMessage sendMessage = new SendMessage(String.valueOf(update.getMessage().getChatId()), Constant.START_DESCRIPTION);
+                sendMessage.setText(Constant.START_DESCRIPTION);
                 sendMessage.setReplyMarkup(KeyboardFactory.withStartMessage());
-                statesDB.put(update.getCallbackQuery().getMessage().getChatId(), UserState.CHOOSING_FIRST_ACTION);
-                return sendMessage;
+                state = UserState.CHOOSING_FIRST_ACTION;
+                break;
         }
+        return sendMessage;
     }
 
     private BotApiMethod<?> allReminder(Update update) {

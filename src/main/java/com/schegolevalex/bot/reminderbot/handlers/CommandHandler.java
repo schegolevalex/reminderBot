@@ -15,7 +15,7 @@ public class CommandHandler implements Handler {
     }
 
     @Override
-    public BotApiMethod<?> handle(Update update) {
+    public BotApiMethod<?> handle(Update update, UserState state) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
 
@@ -28,7 +28,7 @@ public class CommandHandler implements Handler {
             case ("/start"):
                 sendMessage.setText(Constant.START_DESCRIPTION);
                 sendMessage.setReplyMarkup(KeyboardFactory.withStartMessage());
-                statesDB.put(update.getMessage().getChatId(), UserState.CHOOSING_FIRST_ACTION);
+                state = UserState.CHOOSING_FIRST_ACTION;
                 break;
 
             default:

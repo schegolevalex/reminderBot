@@ -4,7 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.sql.Time;
+import java.util.Date;
 
 @NoArgsConstructor
 @Getter
@@ -24,13 +25,17 @@ public class Reminder {
     @Column(name = "reminder_text", nullable = false)
     String text;
 
-    @Column(name = "reminder_timestamp", nullable = false)
-    Timestamp date;
+    @Column(name = "reminder_date", nullable = false)
+    Date date;
 
-    public Reminder(long chatID, String text, Timestamp date) {
+    @Column(name = "reminder_time", nullable = false)
+    Time time;
+
+    public Reminder(long chatID, String text, Date date, Time time) {
         this.chatID = chatID;
         this.text = text;
         this.date = date;
+        this.time = time;
     }
 
     @Override
@@ -40,6 +45,7 @@ public class Reminder {
                 ", chatID=" + chatID +
                 ", text='" + text + '\'' +
                 ", date=" + date +
+                ", time=" + time +
                 '}';
     }
 }

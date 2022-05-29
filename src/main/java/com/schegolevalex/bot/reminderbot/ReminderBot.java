@@ -1,11 +1,10 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.config.BotConfiguration;
-import com.schegolevalex.bot.reminderbot.handlers.ResponseHandler;
+import com.schegolevalex.bot.reminderbot.handlers.UpdateReceiver;
 import com.schegolevalex.bot.reminderbot.handlers.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -24,16 +23,16 @@ public class ReminderBot extends TelegramWebhookBot {
 
     private final BotConfiguration botConfiguration;
 //    private final RestTemplate restTemplate;
-    private final ResponseHandler responseHandler;
+    private final UpdateReceiver updateReceiver;
 
     private Map<Long, UserState> statesDB;
 
     @Autowired
     public ReminderBot(BotConfiguration botConfiguration, /*RestTemplate restTemplate,*/
-                       ResponseHandler responseHandler, Map <Long, UserState> statesDB) {
+                       UpdateReceiver updateReceiver, Map <Long, UserState> statesDB) {
         this.botConfiguration = botConfiguration;
 //        this.restTemplate = restTemplate;
-        this.responseHandler = responseHandler;
+        this.updateReceiver = updateReceiver;
         this.statesDB = statesDB;
     }
 
@@ -49,7 +48,7 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return responseHandler.onUpdateReceiver(update);
+        return updateReceiver.receive(update);
     }
 
     @Override

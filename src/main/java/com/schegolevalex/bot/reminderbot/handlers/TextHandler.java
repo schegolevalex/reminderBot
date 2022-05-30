@@ -10,6 +10,7 @@ import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
 import java.sql.Time;
 import java.sql.Date;
 import java.util.Map;
@@ -56,10 +57,11 @@ public class TextHandler implements Handler {
                 state = UserState.CHOOSING_FIRST_ACTION;
                 return handle(update, state);
             }
-            default:
+            default: {
                 sendMessage.setText(Constant.START_DESCRIPTION);
                 sendMessage.setReplyMarkup(KeyboardFactory.withStartMessage());
                 break;
+            }
         }
         return sendMessage;
     }

@@ -10,13 +10,13 @@ public class HandlerFactory {
         Handler handler = null;
 
         if (update.hasCallbackQuery())
-            handler = CallbackHandler.getInstance();
+            return CallbackHandler.getInstance();
 
         if (update.hasMessage() && update.getMessage().isCommand())
-            handler = CommandHandler.getInstance();
+            return CommandHandler.getInstance();
 
         if (update.hasMessage() && update.getMessage().hasText())
-            handler = TextHandler.getInstance();
+            return TextHandler.getInstance();
 
         return handler;
     }

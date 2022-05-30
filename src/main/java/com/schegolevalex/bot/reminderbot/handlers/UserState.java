@@ -9,4 +9,9 @@ public enum UserState {
     ADDING_REMINDER_TIME,
 
     WATCHING_REMINDERS,
+
+//    public com.schegolevalex.bot.reminderbot.handlers.UserState set(UserState userState) {
+//        this = userState;
+//        return this;
+//    }
 }

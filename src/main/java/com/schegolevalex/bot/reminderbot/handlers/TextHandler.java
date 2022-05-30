@@ -18,13 +18,15 @@ import java.util.Map;
 @Component
 public class TextHandler implements Handler {
     private static TextHandler instance;
-
-    @Autowired
     private Map<Long, Reminder> reminders;
-    @Autowired
     private ReminderService reminderService;
 
     private TextHandler() {
+    }
+
+    private TextHandler(Map<Long, Reminder> reminders, ReminderService reminderService) {
+        this.reminders = reminders;
+        this.reminderService = reminderService;
     }
 
     @Override

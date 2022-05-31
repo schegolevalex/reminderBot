@@ -10,43 +10,42 @@ import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class CallbackHandler implements Handler {
-    private static CallbackHandler instance;
 
     private ReminderServiceImpl reminderService;
-
-    private CallbackHandler() {
-    }
+    private Map<Long, UserState> userStates;
 
     @Autowired
-    private CallbackHandler(ReminderServiceImpl reminderService) {
+    private CallbackHandler(ReminderServiceImpl reminderService, Map<Long, UserState> userStates) {
         this.reminderService = reminderService;
+        this.userStates = userStates;
     }
 
     @Override
-    public BotApiMethod<?> handle(Update update, UserState state) {
+    public BotApiMethod<?> handle(Update update) {
+        Long chatId = AbilityUtils.getChatId(update);
+
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(AbilityUtils.getChatId(update)));
 
         switch (update.getCallbackQuery().getData()) {
             case (Constant.GO_TO_MY_REMINDERS):
-                state = UserState.WATCHING_REMINDERS; //заглушка, осталось от старого, переписать TODO
+                userStates.put(chatId, UserState.WATCHING_REMINDERS); //заглушка, осталось от старого, переписать TODO
                 return allReminder(update);
 
             case (Constant.GO_TO_ADD_REMINDER):
                 sendMessage.setText(Constant.REMINDER_DESCRIPTION_TEXT);
-                state = UserState.ADDING_REMINDER_TEXT;
+                userStates.put(chatId, UserState.ADDING_REMINDER_TEXT);
                 break;
 
             default:
                 sendMessage.setText(Constant.START_DESCRIPTION);
                 sendMessage.setReplyMarkup(KeyboardFactory.withStartMessage());
-                state = UserState.CHOOSING_FIRST_ACTION;
+                userStates.put(chatId, UserState.CHOOSING_FIRST_ACTION);
                 break;
         }
         return sendMessage;
@@ -63,12 +62,5 @@ public class CallbackHandler implements Handler {
         sendMessage.setText(String.valueOf(text));
 
         return sendMessage;
-    }
-
-    public static CallbackHandler getInstance() {
-        if (instance == null) {
-            instance = new CallbackHandler();
-        }
-        return instance;
     }
 }

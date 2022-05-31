@@ -17,47 +17,47 @@ import java.util.Map;
 
 @Component
 public class TextHandler implements Handler {
-    private static TextHandler instance;
+    private Map<Long, UserState> userStates;
     private Map<Long, Reminder> reminders;
     private ReminderService reminderService;
 
-    private TextHandler() {
-    }
     @Autowired
-    private TextHandler(Map<Long, Reminder> reminders, ReminderService reminderService) {
+    private TextHandler(Map<Long, UserState> userStates, Map<Long, Reminder> reminders, ReminderService reminderService) {
+        this.userStates = userStates;
         this.reminders = reminders;
         this.reminderService = reminderService;
     }
 
     @Override
-    public BotApiMethod<?> handle(Update update, UserState state) {
+    public BotApiMethod<?> handle(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
 
-        switch (state) {
+        switch (userStates.get(chatId)) {
             case ADDING_REMINDER_TEXT: {
+                reminders.put(chatId, new Reminder());
                 Reminder newReminder = reminders.get(chatId);
-                newReminder.setReminderID(chatId);
+                newReminder.setChatID(chatId);
                 newReminder.setText(update.getMessage().getText());
                 sendMessage.setText(Constant.REMINDER_DESCRIPTION_DATE);
-                state = UserState.ADDING_REMINDER_DATE;
+                userStates.put(chatId, UserState.ADDING_REMINDER_DATE);
                 break;
             }
             case ADDING_REMINDER_DATE: {
                 Reminder newReminder = reminders.get(chatId);
                 newReminder.setDate(Date.valueOf(update.getMessage().getText()));
                 sendMessage.setText(Constant.REMINDER_DESCRIPTION_TIME);
-                state = UserState.ADDING_REMINDER_TIME;
+                userStates.put(chatId, UserState.ADDING_REMINDER_TIME);
                 break;
             }
             case ADDING_REMINDER_TIME: {
                 Reminder newReminder = reminders.get(chatId);
                 newReminder.setTime(Time.valueOf(update.getMessage().getText()));
                 reminderService.saveReminder(newReminder);
-                state = UserState.CHOOSING_FIRST_ACTION;
-                return handle(update, state);
+                userStates.put(chatId, UserState.CHOOSING_FIRST_ACTION);
+                return handle(update);
             }
             default: {
                 sendMessage.setText(Constant.START_DESCRIPTION);
@@ -66,12 +66,5 @@ public class TextHandler implements Handler {
             }
         }
         return sendMessage;
-    }
-
-    public static TextHandler getInstance() {
-        if (instance == null) {
-            instance = new TextHandler();
-        }
-        return instance;
     }
 }

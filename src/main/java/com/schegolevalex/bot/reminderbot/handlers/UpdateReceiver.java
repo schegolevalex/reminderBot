@@ -14,15 +14,11 @@ import java.util.Map;
 @Component
 public class UpdateReceiver {
 
-    private Map<Long, UserState> userStates;
     private ReminderServiceImpl reminderService;
     private HandlerFactory handlerFactory;
 
     @Autowired
-    private UpdateReceiver(Map<Long, UserState> userStates,
-                           ReminderServiceImpl reminderService,
-                           HandlerFactory handlerFactory) {
-        this.userStates = userStates;
+    private UpdateReceiver(ReminderServiceImpl reminderService, HandlerFactory handlerFactory) {
         this.reminderService = reminderService;
         this.handlerFactory = handlerFactory;
     }
@@ -32,12 +28,9 @@ public class UpdateReceiver {
         Handler handler = handlerFactory.getHandler(update);
 
         if (handler != null) {
-            UserState state = userStates.get(chatId);
-            BotApiMethod method = handler.handle(update, state);
-            userStates.put(chatId, state);
-            return method;
+            return handler.handle(update);
+        } else {
+            return new SendMessage(String.valueOf(chatId), Constant.UNKNOWN_REQUEST);
         }
-
-        return new SendMessage(String.valueOf(chatId), Constant.UNKNOWN_REQUEST);
     }
 }

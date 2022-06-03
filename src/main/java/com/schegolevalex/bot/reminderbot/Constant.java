@@ -11,8 +11,8 @@ public interface Constant {
 
     String START_DESCRIPTION = "Выберите действие:";
     String REMINDER_DESCRIPTION_TEXT = "Напишите, о чем Вам напомнить?";
-    String REMINDER_DESCRIPTION_DATE = "Когда Вам напомнить? Введите дату в формате ГГГГ.ММ.ДД:";
-    String REMINDER_DESCRIPTION_TIME = "Во сколько Вам напомнить? Введите время в формате ЧЧ:ММ:CC";
+    String REMINDER_DESCRIPTION_DATE = "Когда Вам напомнить? Введите дату в формате \"ДД.ММ.ГГГГ\":";
+    String REMINDER_DESCRIPTION_TIME = "Во сколько Вам напомнить? Введите время в формате \"ЧЧ:ММ\":";
     String MY_REMINDERS = "Ваши напоминания:" + "\n";
 
 
@@ -23,4 +23,6 @@ public interface Constant {
 
     String UNKNOWN_REQUEST = "Не понимаю... Давай заново. Жми /start";
     String SUCCESSFUL_ADDITION = "Напоминание успешно создано";
+    String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод:";
+    String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод:";
 }

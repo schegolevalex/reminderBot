@@ -4,8 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @NoArgsConstructor
 @Getter
@@ -26,12 +26,12 @@ public class Reminder {
     String text;
 
     @Column(name = "reminder_date", nullable = false)
-    Date date;
+    LocalDate date;
 
     @Column(name = "reminder_time", nullable = false)
-    Time time;
+    LocalTime time;
 
-    public Reminder(long chatID, String text, Date date, Time time) {
+    public Reminder(long chatID, String text, LocalDate date, LocalTime time) {
         this.chatID = chatID;
         this.text = text;
         this.date = date;

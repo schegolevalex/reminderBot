@@ -1,12 +1,11 @@
-package com.schegolevalex.bot.reminderbot.config;
+package com.schegolevalex.bot.reminderbot.configs;
 
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.handlers.UserState;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,5 +28,13 @@ public class AppConfiguration {
     @Bean
     public Map<Long, Reminder> reminders() {
         return new HashMap<>();
+    }
+
+    @Bean
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+        ThreadPoolTaskScheduler threadPool = new ThreadPoolTaskScheduler();
+        threadPool.setPoolSize(5);
+//        threadPool.initialize();
+        return threadPool;
     }
 }

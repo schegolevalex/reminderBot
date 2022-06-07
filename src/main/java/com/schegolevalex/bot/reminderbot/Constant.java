@@ -1,13 +1,7 @@
 package com.schegolevalex.bot.reminderbot;
 
 public interface Constant {
-//    String BOT_NAME = "First_To_Do_Bot";
-//    String BOT_TOKEN = System.getenv("BOT_TOKEN");
-//    String DB_URL = System.getenv("DB_URL");
-//    String DB_USERNAME = System.getenv("DB_USERNAME");
-//    String DB_PASSWORD = System.getenv("DB_PASSWORD");
-
-    String CHAT_STATES = "Состояния чата";
+//    String CHAT_STATES = "Состояния чата";
 
     String START_DESCRIPTION = "Выберите действие:";
     String REMINDER_DESCRIPTION_TEXT = "Напишите, о чем Вам напомнить?";
@@ -25,4 +19,7 @@ public interface Constant {
     String SUCCESSFUL_ADDITION = "Напоминание успешно создано";
     String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод:";
     String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод:";
+
+    String REMINDER_MESSAGE = "Сегодня в %s Вы просили напомнить \"%s\"";
+
 }

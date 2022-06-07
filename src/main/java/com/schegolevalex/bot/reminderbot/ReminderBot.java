@@ -1,39 +1,41 @@
 package com.schegolevalex.bot.reminderbot;
 
-import com.schegolevalex.bot.reminderbot.config.BotConfiguration;
+import com.schegolevalex.bot.reminderbot.configs.BotConfiguration;
+import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.handlers.UpdateReceiver;
-import com.schegolevalex.bot.reminderbot.handlers.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import javax.annotation.PostConstruct;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class ReminderBot extends TelegramWebhookBot {
 
     private final BotConfiguration botConfiguration;
-//    private final RestTemplate restTemplate;
     private final UpdateReceiver updateReceiver;
-
-    private Map<Long, UserState> statesDB;
+    private final ThreadPoolTaskScheduler taskScheduler;
 
     @Autowired
-    public ReminderBot(BotConfiguration botConfiguration, /*RestTemplate restTemplate,*/
-                       UpdateReceiver updateReceiver, Map <Long, UserState> statesDB) {
+    public ReminderBot(BotConfiguration botConfiguration,
+                       UpdateReceiver updateReceiver,
+                       ThreadPoolTaskScheduler taskScheduler) {
         this.botConfiguration = botConfiguration;
-//        this.restTemplate = restTemplate;
         this.updateReceiver = updateReceiver;
-        this.statesDB = statesDB;
+        this.taskScheduler = taskScheduler;
     }
 
     @Override
@@ -49,6 +51,26 @@ public class ReminderBot extends TelegramWebhookBot {
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         return updateReceiver.receive(update);
+    }
+
+    public void sendReminder(Reminder reminder) {
+
+        Date date = Date.from(reminder.getDate().atTime(reminder.getTime()).toInstant(ZoneOffset.of("+3")));
+
+        taskScheduler.schedule(() ->
+                sendMessage(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()),
+                        reminder.getChatID()), date);
+    }
+
+    public void sendMessage(String text, Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setText(text);
+        sendMessage.setChatId(String.valueOf(chatId));
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -69,11 +91,6 @@ public class ReminderBot extends TelegramWebhookBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-
-//        restTemplate.getForEntity("https://api.telegram.org/bot" + botConfiguration.getBotToken() +
-//                "/" + DeleteWebhook.PATH, String.class);
-//        restTemplate.getForEntity("https://api.telegram.org/bot" + botConfiguration.getBotToken()
-//                + "/" + SetWebhook.PATH + "?url=" + botConfiguration.getWebhookPath(), String.class);
     }
 
     @PostConstruct

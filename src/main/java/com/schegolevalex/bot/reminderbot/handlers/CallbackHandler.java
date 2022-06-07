@@ -10,14 +10,15 @@ import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class CallbackHandler implements Handler {
 
-    private ReminderServiceImpl reminderService;
-    private Map<Long, UserState> userStates;
+    private final ReminderServiceImpl reminderService;
+    private final Map<Long, UserState> userStates;
 
     @Autowired
     private CallbackHandler(ReminderServiceImpl reminderService, Map<Long, UserState> userStates) {
@@ -34,7 +35,7 @@ public class CallbackHandler implements Handler {
 
         switch (update.getCallbackQuery().getData()) {
             case (Constant.GO_TO_MY_REMINDERS):
-                userStates.put(chatId, UserState.WATCHING_REMINDERS); //заглушка, осталось от старого, переписать TODO
+                userStates.put(chatId, UserState.WATCHING_REMINDERS);
                 return allReminder(update);
 
             case (Constant.GO_TO_ADD_REMINDER):
@@ -55,7 +56,12 @@ public class CallbackHandler implements Handler {
         List<Reminder> reminders = reminderService.getAllRemindersById(AbilityUtils.getChatId(update));
         StringBuilder text = new StringBuilder(Constant.MY_REMINDERS);
         for (Reminder reminder : reminders) {
-            text.append(reminder.getDate() + " " + reminder.getTime() + " " + reminder.getText() + "\n");
+            text.append(reminder.getDate())
+                    .append(" ")
+                    .append(reminder.getTime())
+                    .append(" ")
+                    .append(reminder.getText())
+                    .append("\n");
         }
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(AbilityUtils.getChatId(update)));

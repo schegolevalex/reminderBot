@@ -7,9 +7,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class HandlerFactory {
 
-    private TextHandler textHandler;
-    private CommandHandler commandHandler;
-    private CallbackHandler callbackHandler;
+    private final TextHandler textHandler;
+    private final CommandHandler commandHandler;
+    private final CallbackHandler callbackHandler;
 
     @Autowired
     public HandlerFactory(TextHandler textHandler, CommandHandler commandHandler, CallbackHandler callbackHandler) {

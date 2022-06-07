@@ -1,38 +1,39 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
-import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
+import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 @Component
 public class TextHandler implements Handler {
-    private Map<Long, UserState> userStates;
-    private Map<Long, Reminder> reminders;
-    private ReminderService reminderService;
+    private final Map<Long, UserState> userStates;
+    private final Map<Long, Reminder> reminders;
+    private final ReminderService reminderService;
+    private final ReminderBot reminderBot;
 
     @Autowired
-    private TextHandler(Map<Long, UserState> userStates, Map<Long, Reminder> reminders, ReminderService reminderService) {
+    private TextHandler(Map<Long, UserState> userStates,
+                        Map<Long, Reminder> reminders,
+                        ReminderService reminderService,
+                        @Lazy ReminderBot reminderBot) {
         this.userStates = userStates;
         this.reminders = reminders;
         this.reminderService = reminderService;
+        this.reminderBot = reminderBot;
     }
 
     @Override
@@ -86,6 +87,7 @@ public class TextHandler implements Handler {
                 if (time != null) {
                     newReminder.setTime(time);
                     reminderService.saveReminder(newReminder);
+                    reminderBot.sendReminder(newReminder);
                     userStates.put(chatId, UserState.CHOOSING_FIRST_ACTION);
                     return handle(update);
                 } else {

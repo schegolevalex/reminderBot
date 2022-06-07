@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Component
 public class CommandHandler implements Handler {
-    private Map<Long, UserState> userStates;
+    private final Map<Long, UserState> userStates;
 
     @Autowired
     private CommandHandler(Map<Long, UserState> userStates) {
@@ -27,11 +27,6 @@ public class CommandHandler implements Handler {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
 
-//        switch (update.getMessage().getEntities().stream()
-//                .map(entity -> entity.getText())
-//                .filter(entity -> entity.startsWith("/"))
-//                .map(entity -> entity.substring(1))
-//                .findFirst().orElse("")) {
         switch (update.getMessage().getText()) {
             case ("/start"):
                 sendMessage.setText(Constant.START_DESCRIPTION);

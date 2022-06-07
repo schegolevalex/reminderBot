@@ -5,20 +5,22 @@ import com.schegolevalex.bot.reminderbot.repositories.ReminderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ReminderServiceImpl implements ReminderService {
 
+    private final ReminderRepository reminderRepository;
+
     @Autowired
-    private ReminderRepository reminderRepository;
+    public ReminderServiceImpl(ReminderRepository reminderRepository) {
+        this.reminderRepository = reminderRepository;
+    }
 
     @Override
     public List<Reminder> getAllReminders() {
-        List<Reminder> reminders = reminderRepository.findAll();
-        return reminders;
+        return reminderRepository.findAll();
     }
 
     @Override
@@ -43,7 +45,6 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     public List<Reminder> getAllRemindersById(Long chatId) {
-        List<Reminder> reminders = reminderRepository.findRemindersByChatID(chatId);
-        return reminders;
+        return reminderRepository.findRemindersByChatID(chatId);
     }
 }

@@ -10,7 +10,7 @@ public interface ReminderService {
 
     public void saveReminder(Reminder reminder);
 
-    public Reminder getReminder (long id);
+    public Reminder getReminder(long id);
 
-    public void deleteReminder (long id);
+    public void deleteReminder(long id);
 }

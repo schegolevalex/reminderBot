@@ -1,7 +1,6 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
 public enum UserState {
-    //    AWAITING_START,
     CHOOSING_FIRST_ACTION,
     ADDING_REMINDER_TEXT,
     ADDING_REMINDER_DATE,

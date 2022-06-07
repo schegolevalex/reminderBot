@@ -9,19 +9,15 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 
 @Configuration
 @ComponentScan(basePackages = "com.schegolevalex.bot.reminderbot")
 public class AppConfiguration {
 
-//    @Bean
-//    public RestTemplate restTemplate() {
-//        return new RestTemplate();
-//    }
-
     @Bean
-    public Map<Long, UserState> userStates() {
+    public Map<Long, Stack<UserState>> userStates() {
         return new HashMap<>();
     }
 

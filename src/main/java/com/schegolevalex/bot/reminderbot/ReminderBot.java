@@ -3,6 +3,7 @@ package com.schegolevalex.bot.reminderbot;
 import com.schegolevalex.bot.reminderbot.configs.BotConfiguration;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.handlers.UpdateReceiver;
+import com.schegolevalex.bot.reminderbot.handlers.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.annotation.PostConstruct;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class ReminderBot extends TelegramWebhookBot {
@@ -28,14 +27,17 @@ public class ReminderBot extends TelegramWebhookBot {
     private final BotConfiguration botConfiguration;
     private final UpdateReceiver updateReceiver;
     private final ThreadPoolTaskScheduler taskScheduler;
+    private final Map<Long, Stack<UserState>> userStates;
 
     @Autowired
     public ReminderBot(BotConfiguration botConfiguration,
                        UpdateReceiver updateReceiver,
-                       ThreadPoolTaskScheduler taskScheduler) {
+                       ThreadPoolTaskScheduler taskScheduler,
+                       Map<Long, Stack<UserState>> userStates) {
         this.botConfiguration = botConfiguration;
         this.updateReceiver = updateReceiver;
         this.taskScheduler = taskScheduler;
+        this.userStates = userStates;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return updateReceiver.receive(update);
+        return updateReceiver.receive(update, userStates);
     }
 
     public void sendReminder(Reminder reminder) {

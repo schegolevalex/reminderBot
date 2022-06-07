@@ -17,40 +17,38 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Stack;
 
 @Component
 public class TextHandler implements Handler {
-    private final Map<Long, UserState> userStates;
     private final Map<Long, Reminder> reminders;
     private final ReminderService reminderService;
     private final ReminderBot reminderBot;
 
     @Autowired
-    private TextHandler(Map<Long, UserState> userStates,
-                        Map<Long, Reminder> reminders,
+    private TextHandler(Map<Long, Reminder> reminders,
                         ReminderService reminderService,
                         @Lazy ReminderBot reminderBot) {
-        this.userStates = userStates;
         this.reminders = reminders;
         this.reminderService = reminderService;
         this.reminderBot = reminderBot;
     }
 
     @Override
-    public BotApiMethod<?> handle(Update update) {
+    public BotApiMethod<?> handle(Update update, Stack<UserState> userState) {
         Long chatId = AbilityUtils.getChatId(update);
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
 
-        switch (userStates.get(chatId)) {
+        switch (userState.peek()) {
             case ADDING_REMINDER_TEXT: {
                 reminders.put(chatId, new Reminder());
                 Reminder newReminder = reminders.get(chatId);
                 newReminder.setChatID(chatId);
                 newReminder.setText(update.getMessage().getText());
                 sendMessage.setText(Constant.REMINDER_DESCRIPTION_DATE);
-                userStates.put(chatId, UserState.ADDING_REMINDER_DATE);
+                userState.push(UserState.ADDING_REMINDER_DATE);
                 break;
             }
             case ADDING_REMINDER_DATE: {
@@ -67,7 +65,7 @@ public class TextHandler implements Handler {
                 if (date != null) {
                     newReminder.setDate(date);
                     sendMessage.setText(Constant.REMINDER_DESCRIPTION_TIME);
-                    userStates.put(chatId, UserState.ADDING_REMINDER_TIME);
+                    userState.push(UserState.ADDING_REMINDER_TIME);
                 } else {
                     sendMessage.setText(Constant.WRONG_DATE_FORMAT);
                 }
@@ -88,8 +86,8 @@ public class TextHandler implements Handler {
                     newReminder.setTime(time);
                     reminderService.saveReminder(newReminder);
                     reminderBot.sendReminder(newReminder);
-                    userStates.put(chatId, UserState.CHOOSING_FIRST_ACTION);
-                    return handle(update);
+                    userState.push(UserState.CHOOSING_FIRST_ACTION);
+                    return handle(update, userState);
                 } else {
                     sendMessage.setText(Constant.WRONG_TIME_FORMAT);
                 }

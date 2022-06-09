@@ -1,7 +1,7 @@
 package com.schegolevalex.bot.reminderbot.configs;
 
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
-import com.schegolevalex.bot.reminderbot.handlers.UserState;
+import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

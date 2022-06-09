@@ -2,8 +2,7 @@ package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.configs.BotConfiguration;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
-import com.schegolevalex.bot.reminderbot.handlers.UpdateReceiver;
-import com.schegolevalex.bot.reminderbot.handlers.UserState;
+import com.schegolevalex.bot.reminderbot.states.ReminderFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -19,25 +18,24 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.annotation.PostConstruct;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class ReminderBot extends TelegramWebhookBot {
 
     private final BotConfiguration botConfiguration;
-    private final UpdateReceiver updateReceiver;
+    private final ReminderFacade reminderFacade;
     private final ThreadPoolTaskScheduler taskScheduler;
-    private final Map<Long, Stack<UserState>> userStates;
 
     @Autowired
     public ReminderBot(BotConfiguration botConfiguration,
-                       UpdateReceiver updateReceiver,
-                       ThreadPoolTaskScheduler taskScheduler,
-                       Map<Long, Stack<UserState>> userStates) {
+                       ReminderFacade reminderFacade,
+                       ThreadPoolTaskScheduler taskScheduler) {
         this.botConfiguration = botConfiguration;
-        this.updateReceiver = updateReceiver;
+        this.reminderFacade = reminderFacade;
         this.taskScheduler = taskScheduler;
-        this.userStates = userStates;
     }
 
     @Override
@@ -52,7 +50,7 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return updateReceiver.receive(update, userStates);
+        return reminderFacade.getResult(update);
     }
 
     public void sendReminder(Reminder reminder) {

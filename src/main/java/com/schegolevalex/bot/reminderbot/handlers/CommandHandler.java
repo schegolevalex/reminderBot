@@ -1,35 +1,38 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
-import com.schegolevalex.bot.reminderbot.Constant;
-import com.schegolevalex.bot.reminderbot.KeyboardFactory;
+import com.schegolevalex.bot.reminderbot.states.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.abilitybots.api.util.AbilityUtils;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Stack;
 
 @Component
-public class CommandHandler implements Handler {
+public class CommandHandler extends Handler {
+
+    @Autowired
+    protected CommandHandler(AwaitingStartState awaitingStartState,
+                             ChoosingFirstActionState choosingFirstActionState,
+                             WatchingRemindersState watchingRemindersState,
+                             AddingReminderTextState addingReminderTextState,
+                             AddingReminderDateState addingReminderDateState,
+                             AddingReminderTimeState addingReminderTimeState,
+                             WrongInputState wrongInputState) {
+        super(awaitingStartState, choosingFirstActionState, watchingRemindersState,
+                addingReminderTextState, addingReminderDateState, addingReminderTimeState, wrongInputState);
+    }
 
     @Override
-    public BotApiMethod<?> handle(Update update, Stack<UserState> userState) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(AbilityUtils.getChatId(update)));
-
+    public void handle(Update update, Stack<UserState> userState) {
         switch (update.getMessage().getText()) {
             case ("/start"):
-                sendMessage.setText(Constant.START_DESCRIPTION);
-                sendMessage.setReplyMarkup(KeyboardFactory.withStartMessage());
-                userState.push(UserState.CHOOSING_FIRST_ACTION);
+                userState.push(choosingFirstActionState);
                 break;
 
             default:
-                sendMessage.setText(Constant.UNKNOWN_REQUEST);
+
+//                sendMessage.setText(Constant.UNKNOWN_REQUEST);
                 break;
         }
-
-        return sendMessage;
     }
 }

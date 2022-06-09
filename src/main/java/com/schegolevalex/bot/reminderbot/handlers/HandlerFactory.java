@@ -10,12 +10,17 @@ public class HandlerFactory {
     private final TextHandler textHandler;
     private final CommandHandler commandHandler;
     private final CallbackHandler callbackHandler;
+    private final WrongInputHandler wrongInputHandler;
 
     @Autowired
-    public HandlerFactory(TextHandler textHandler, CommandHandler commandHandler, CallbackHandler callbackHandler) {
+    public HandlerFactory(TextHandler textHandler,
+                          CommandHandler commandHandler,
+                          CallbackHandler callbackHandler,
+                          WrongInputHandler wrongInputHandler) {
         this.textHandler = textHandler;
         this.commandHandler = commandHandler;
         this.callbackHandler = callbackHandler;
+        this.wrongInputHandler = wrongInputHandler;
     }
 
     public Handler getHandler(Update update) {
@@ -28,7 +33,7 @@ public class HandlerFactory {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             return textHandler;
-        } else return null;
+        } else return wrongInputHandler;
 
     }
 }

@@ -48,7 +48,7 @@ public class KeyboardFactory {
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
         InlineKeyboardButton button = new InlineKeyboardButton("Назад");
-        button.setCallbackData(Constant.GO_TO_MAIN);
+        button.setCallbackData(Constant.GO_BACK);
         rowInline.add(button);
         keyboard.add(rowInline);
 

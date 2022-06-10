@@ -19,8 +19,8 @@ public interface Constant {
 
     String UNKNOWN_REQUEST = "Не понимаю... Давайте заново. Для начала общения выберите команду /start";
     String SUCCESSFUL_ADDITION = "Напоминание успешно создано";
-    String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод:";
-    String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод:";
+    String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод. Напоминаю, формат даты \"ДД.ММ.ГГГГ\":";
+    String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод. Напоминаю, формат времени \"ЧЧ:ММ\":";
 
     String REMINDER_MESSAGE = "Сегодня в %s Вы просили напомнить \"%s\"";
 

@@ -35,8 +35,12 @@ public class CallbackHandler extends Handler {
                 userState.push(addingReminderTextState);
                 break;
 
+            case (Constant.GO_BACK):
+                userState.pop();
+                break;
+
             default:
-//                userState.push(UserState.CHOOSING_FIRST_ACTION);
+                userState.push(wrongInputState);
                 break;
         }
     }

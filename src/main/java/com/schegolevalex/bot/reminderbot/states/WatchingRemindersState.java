@@ -6,6 +6,7 @@ import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
 import com.schegolevalex.bot.reminderbot.services.ReminderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -16,8 +17,8 @@ public class WatchingRemindersState extends UserState {
     private final ReminderServiceImpl reminderService;
 
     @Autowired
-    public WatchingRemindersState(ReminderFacade reminderFacade,
-                                  HandlerFactory handlerFactory,
+    public WatchingRemindersState(@Lazy ReminderFacade reminderFacade,
+                                  @Lazy HandlerFactory handlerFactory,
                                   ReminderServiceImpl reminderService) {
         super(reminderFacade, handlerFactory);
         this.reminderService = reminderService;

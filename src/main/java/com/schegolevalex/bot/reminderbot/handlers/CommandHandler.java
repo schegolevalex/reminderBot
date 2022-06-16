@@ -30,8 +30,7 @@ public class CommandHandler extends Handler {
                 break;
 
             default:
-
-//                sendMessage.setText(Constant.UNKNOWN_REQUEST);
+                userState.push(wrongInputState);
                 break;
         }
     }

@@ -22,6 +22,7 @@ public interface Constant {
     String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод. Напоминаю, формат даты \"ДД.ММ.ГГГГ\":";
     String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод. Напоминаю, формат времени \"ЧЧ:ММ\":";
 
+    String REMINDER_LIST_IS_EMPTY = "у Вас нет напоминаний.";
     String REMINDER_MESSAGE = "Сегодня в %s Вы просили напомнить \"%s\"";
 
 }

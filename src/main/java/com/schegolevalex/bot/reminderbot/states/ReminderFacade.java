@@ -26,14 +26,14 @@ public class ReminderFacade {
     public BotApiMethod<?> getResult(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        handle(update);
+        process(update);
         return getReply(chatId);
     }
 
-    public void handle(Update update) {
+    public void process(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         Stack<UserState> userState = getCurrentState(chatId);
-        userStates.get(chatId).peek().handle(update, userState);
+        userStates.get(chatId).peek().process(update, userState);
     }
 
     public SendMessage getReply(Long chatId) {
@@ -67,6 +67,7 @@ public class ReminderFacade {
     public void setNextState(UserState userState) {
 
     }
+
     public void setPreviousState() {
 
     }

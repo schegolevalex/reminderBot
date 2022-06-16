@@ -22,7 +22,7 @@ public abstract class UserState {
 
     abstract SendMessage setText(SendMessage sendMessage);
 
-    void handle(Update update, Stack<UserState> userState) {
+    void process(Update update, Stack<UserState> userState) {
         Handler currentHandler = handlerFactory.getHandler(update);
         currentHandler.handle(update, userState);
     }

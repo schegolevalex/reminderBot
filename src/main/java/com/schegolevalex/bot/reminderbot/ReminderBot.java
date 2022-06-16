@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,12 +55,15 @@ public class ReminderBot extends TelegramWebhookBot {
     }
 
     public void sendReminder(Reminder reminder) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reminderDateTime = reminder.getDate().atTime(reminder.getTime());
 
-        Date date = Date.from(reminder.getDate().atTime(reminder.getTime()).toInstant(ZoneOffset.of("+3")));
-
-        taskScheduler.schedule(() ->
-                sendMessage(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()),
-                        reminder.getChatID()), date);
+        if (now.isBefore(reminderDateTime)) {
+            Date date = Date.from(reminderDateTime.toInstant(ZoneOffset.of("+3")));
+            taskScheduler.schedule(() ->
+                    sendMessage(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()),
+                            reminder.getChatID()), date);
+        }
     }
 
     public void sendMessage(String text, Long chatId) {

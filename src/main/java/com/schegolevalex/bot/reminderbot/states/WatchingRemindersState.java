@@ -27,17 +27,20 @@ public class WatchingRemindersState extends UserState {
     @Override
     public SendMessage setText(SendMessage sendMessage) {
         List<Reminder> reminders = reminderService.getAllRemindersById(Long.valueOf(sendMessage.getChatId()));
-
         StringBuilder text = new StringBuilder(Constant.MY_REMINDERS);
-        for (Reminder reminder : reminders) {
-            text.append(reminder.getDate())
-                    .append(" ")
-                    .append(reminder.getTime())
-                    .append(" ")
-                    .append(reminder.getText())
-                    .append("\n");
-        }
 
+        if (reminders.isEmpty()) {
+            text.append(Constant.REMINDER_LIST_IS_EMPTY);
+        } else {
+            for (Reminder reminder : reminders) {
+                text.append(reminder.getDate())
+                        .append(" ")
+                        .append(reminder.getTime())
+                        .append(" ")
+                        .append(reminder.getText())
+                        .append("\n");
+            }
+        }
         sendMessage.setText(String.valueOf(text));
         sendMessage.setReplyMarkup(KeyboardFactory.withBackButton());
         return sendMessage;

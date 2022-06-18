@@ -2,6 +2,7 @@ package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.configs.BotConfiguration;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
+import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import com.schegolevalex.bot.reminderbot.states.ReminderFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -29,14 +30,17 @@ public class ReminderBot extends TelegramWebhookBot {
     private final BotConfiguration botConfiguration;
     private final ReminderFacade reminderFacade;
     private final ThreadPoolTaskScheduler taskScheduler;
+    private final ReminderService reminderService;
 
     @Autowired
     public ReminderBot(BotConfiguration botConfiguration,
                        ReminderFacade reminderFacade,
-                       ThreadPoolTaskScheduler taskScheduler) {
+                       ThreadPoolTaskScheduler taskScheduler,
+                       ReminderService reminderService) {
         this.botConfiguration = botConfiguration;
         this.reminderFacade = reminderFacade;
         this.taskScheduler = taskScheduler;
+        this.reminderService = reminderService;
     }
 
     @Override
@@ -107,6 +111,14 @@ public class ReminderBot extends TelegramWebhookBot {
             execute(setMyCommands);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @PostConstruct
+    private void registerPreviousReminders() {
+        List<Reminder> allReminders = reminderService.getAllReminders();
+        for (Reminder reminder : allReminders) {
+            sendReminder(reminder);
         }
     }
 }

@@ -1,11 +1,11 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
+import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
-import com.schegolevalex.bot.reminderbot.states.*;
+import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -22,18 +22,9 @@ public class TextHandler extends Handler {
     private final ReminderBot reminderBot;
 
     @Autowired
-    protected TextHandler(@Lazy AwaitingStartState awaitingStartState,
-                          ChoosingFirstActionState choosingFirstActionState,
-                          WatchingRemindersState watchingRemindersState,
-                          AddingReminderTextState addingReminderTextState,
-                          AddingReminderDateState addingReminderDateState,
-                          AddingReminderTimeState addingReminderTimeState,
-                          WrongInputState wrongInputState,
-                          Map<Long, Reminder> reminders,
+    protected TextHandler(Map<Long, Reminder> reminders,
                           ReminderService reminderService,
                           ReminderBot reminderBot) {
-        super(awaitingStartState, choosingFirstActionState, watchingRemindersState,
-                addingReminderTextState, addingReminderDateState, addingReminderTimeState, wrongInputState);
         this.reminders = reminders;
         this.reminderService = reminderService;
         this.reminderBot = reminderBot;
@@ -44,14 +35,15 @@ public class TextHandler extends Handler {
         Long chatId = AbilityUtils.getChatId(update);
 
         UserState peek = userState.peek();
-        if (addingReminderTextState.equals(peek)) {
+
+        if (states.get("addingReminderTextState").equals(peek)) {
             this.reminders.put(chatId, new Reminder());
             Reminder tempReminder = this.reminders.get(chatId);
             tempReminder.setChatID(chatId);
             tempReminder.setText(update.getMessage().getText());
-            userState.push(addingReminderDateState);
+            userState.push(states.get("addingReminderDateState"));
 
-        } else if (addingReminderDateState.equals(peek)) {
+        } else if (states.get("addingReminderDateState").equals(peek)) {
             Reminder newReminder = this.reminders.get(chatId);
             String text = update.getMessage().getText();
             LocalDate date = null;
@@ -59,13 +51,13 @@ public class TextHandler extends Handler {
             try {
                 date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             } catch (Exception e) {
-                userState.push(wrongInputState);
+                userState.push(states.get("wrongInputState"));
                 return;
             }
             newReminder.setDate(date);
-            userState.push(addingReminderTimeState);
+            userState.push(states.get("addingReminderTimeState"));
 
-        } else if (addingReminderTimeState.equals(peek)) {
+        } else if (states.get("addingReminderTimeState").equals(peek)) {
             Reminder newReminder = this.reminders.get(chatId);
             String text = update.getMessage().getText();
             LocalTime time = null;
@@ -73,17 +65,18 @@ public class TextHandler extends Handler {
             try {
                 time = LocalTime.parse(text);
             } catch (Exception e) {
-                userState.push(wrongInputState);
+                userState.push(states.get("wrongInputState"));
                 return;
             }
             newReminder.setTime(time);
 
             this.reminderService.saveReminder(newReminder);
             reminderBot.sendReminder(newReminder);
-            userState.push(choosingFirstActionState);
+            reminderBot.sendMessage(Constant.SUCCESSFUL_ADDITION, chatId);
+            userState.push(states.get("choosingFirstActionState"));
 
         } else {
-            userState.push(wrongInputState);
+            userState.push(states.get("wrongInputState"));
         }
     }
 }

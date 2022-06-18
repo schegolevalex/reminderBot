@@ -9,14 +9,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Stack;
 
 public abstract class UserState {
-    // возможно стоит удалить это поле
-    protected final ReminderFacade reminderFacade;
     protected final HandlerFactory handlerFactory;
 
     @Autowired
-    public UserState(ReminderFacade reminderFacade,
-                     HandlerFactory handlerFactory) {
-        this.reminderFacade = reminderFacade;
+    public UserState(HandlerFactory handlerFactory) {
         this.handlerFactory = handlerFactory;
     }
 

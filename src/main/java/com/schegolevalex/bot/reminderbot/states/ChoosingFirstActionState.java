@@ -12,9 +12,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 public class ChoosingFirstActionState extends UserState {
 
     @Autowired
-    public ChoosingFirstActionState(@Lazy ReminderFacade reminderFacade,
-                                    @Lazy HandlerFactory handlerFactory) {
-        super(reminderFacade, handlerFactory);
+    public ChoosingFirstActionState(@Lazy HandlerFactory handlerFactory) {
+        super(handlerFactory);
     }
 
     @Override

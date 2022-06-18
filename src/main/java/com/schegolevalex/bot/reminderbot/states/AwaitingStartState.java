@@ -12,9 +12,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 public class AwaitingStartState extends UserState {
 
     @Autowired
-    public AwaitingStartState(@Lazy ReminderFacade reminderFacade,
-                              @Lazy HandlerFactory handlerFactory) {
-        super(reminderFacade, handlerFactory);
+    public AwaitingStartState(@Lazy HandlerFactory handlerFactory) {
+        super(handlerFactory);
     }
 
     @Override

@@ -10,9 +10,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 @Component
 public class AddingReminderTextState extends UserState {
 
-    public AddingReminderTextState(@Lazy ReminderFacade reminderFacade,
-                                   @Lazy HandlerFactory handlerFactory) {
-        super(reminderFacade, handlerFactory);
+    public AddingReminderTextState(@Lazy HandlerFactory handlerFactory) {
+        super(handlerFactory);
     }
 
     @Override

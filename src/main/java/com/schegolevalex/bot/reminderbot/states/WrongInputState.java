@@ -10,10 +10,13 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 @Component
 public class WrongInputState extends UserState {
 
+    private ReminderFacade reminderFacade;
+
     @Autowired
-    public WrongInputState(@Lazy ReminderFacade reminderFacade,
-                           @Lazy HandlerFactory handlerFactory) {
-        super(reminderFacade, handlerFactory);
+    public WrongInputState(@Lazy HandlerFactory handlerFactory,
+                           @Lazy ReminderFacade reminderFacade) {
+        super(handlerFactory);
+        this.reminderFacade = reminderFacade;
     }
 
     @Override

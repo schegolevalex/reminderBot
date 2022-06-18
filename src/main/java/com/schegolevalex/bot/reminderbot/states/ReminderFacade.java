@@ -43,13 +43,6 @@ public class ReminderFacade {
         return userState.peek().setText(sendMessage);
     }
 
-    public SendMessage getReply(Long chatId, String text) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(text);
-        return sendMessage;
-    }
-
     protected Stack<UserState> getCurrentState(Long chatId) {
         Stack<UserState> userState;
 
@@ -61,14 +54,5 @@ public class ReminderFacade {
             userStates.put(chatId, userState);
         }
         return userState;
-    }
-
-    // нужны ли эти методы, если мы можем в самих состояниях менять по ссылке? TODO
-    public void setNextState(UserState userState) {
-
-    }
-
-    public void setPreviousState() {
-
     }
 }

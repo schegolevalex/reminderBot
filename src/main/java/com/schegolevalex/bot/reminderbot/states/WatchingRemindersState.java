@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -17,10 +19,9 @@ public class WatchingRemindersState extends UserState {
     private final ReminderServiceImpl reminderService;
 
     @Autowired
-    public WatchingRemindersState(@Lazy ReminderFacade reminderFacade,
-                                  @Lazy HandlerFactory handlerFactory,
+    public WatchingRemindersState(@Lazy HandlerFactory handlerFactory,
                                   ReminderServiceImpl reminderService) {
-        super(reminderFacade, handlerFactory);
+        super(handlerFactory);
         this.reminderService = reminderService;
     }
 
@@ -32,8 +33,16 @@ public class WatchingRemindersState extends UserState {
         if (reminders.isEmpty()) {
             text.append(Constant.REMINDER_LIST_IS_EMPTY);
         } else {
+            LocalDateTime now = LocalDateTime.now();
             for (Reminder reminder : reminders) {
-                text.append(reminder.getDate())
+                LocalDateTime reminderDateTime = reminder.getDate().atTime(reminder.getTime());
+                if (now.isBefore(reminderDateTime)) {
+                    text.append("⏳ ");
+                } else {
+                    text.append("✅ ");
+                }
+
+                text.append(reminder.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
                         .append(" ")
                         .append(reminder.getTime())
                         .append(" ")

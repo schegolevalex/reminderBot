@@ -5,9 +5,9 @@ public interface Constant {
 
     String AWAITING_START_DESCRIPTION = "Для начала общения выберите команду /start";
     String CHOOSING_FIRST_ACTION_DESCRIPTION = "Выберите действие:";
-    String ADDING_REMINDER_TEXT_DESCRIPTION = "Напишите, о чем Вам напомнить?";
-    String ADDING_REMINDER_DATE_DESCRIPTION = "Когда Вам напомнить? Введите дату в формате \"ДД.ММ.ГГГГ\":";
-    String ADDING_REMINDER_TIME_DESCRIPTION = "Во сколько Вам напомнить? Введите время в формате \"ЧЧ:ММ\":";
+    String ADDING_REMINDER_TEXT_DESCRIPTION = "1️⃣ Напишите, о чем Вам напомнить?";
+    String ADDING_REMINDER_DATE_DESCRIPTION = "2️⃣ Когда Вам напомнить? Введите дату в формате \"ДД.ММ.ГГГГ\":";
+    String ADDING_REMINDER_TIME_DESCRIPTION = "3️⃣ Во сколько Вам напомнить? Введите время в формате \"ЧЧ:ММ\":";
     String MY_REMINDERS = "Ваши напоминания:" + "\n";
 
 
@@ -25,4 +25,6 @@ public interface Constant {
     String REMINDER_LIST_IS_EMPTY = "у Вас нет напоминаний.";
     String REMINDER_MESSAGE = "Сегодня в %s Вы просили напомнить \"%s\"";
 
+    String START_DESCRIPTION = "Привет, я \"TO-DO\" бот. Я помогу не забыть о важных вещах. " +
+            "Для начала общения введите команду /start";
 }

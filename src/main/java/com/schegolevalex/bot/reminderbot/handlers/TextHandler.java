@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -32,51 +33,67 @@ public class TextHandler extends Handler {
 
     @Override
     public void handle(Update update, Stack<UserState> userState) {
+        String name = userState.peek().getClass().getSimpleName();
+
+        switch (name) {
+            case "AddingReminderTextState":
+                handleText(update, userState);
+                break;
+            case "AddingReminderDateState":
+                handleDate(update, userState);
+                break;
+            case "AddingReminderTimeState":
+                handleTime(update, userState);
+                break;
+            default:
+                userState.push(statesMap.get("wrongInputState"));
+                break;
+        }
+    }
+
+    public void handleText(Update update, Stack<UserState> userState) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        UserState peek = userState.peek();
+        Reminder tempReminder = new Reminder();
+        tempReminder.setChatID(chatId);
+        tempReminder.setText(update.getMessage().getText());
+        reminders.put(chatId, tempReminder);
+        userState.push(statesMap.get("addingReminderDateState"));
+    }
 
-        if (states.get("addingReminderTextState").equals(peek)) {
-            this.reminders.put(chatId, new Reminder());
-            Reminder tempReminder = this.reminders.get(chatId);
-            tempReminder.setChatID(chatId);
-            tempReminder.setText(update.getMessage().getText());
-            userState.push(states.get("addingReminderDateState"));
+    public void handleDate(Update update, Stack<UserState> userState) {
+        Long chatId = AbilityUtils.getChatId(update);
 
-        } else if (states.get("addingReminderDateState").equals(peek)) {
-            Reminder newReminder = this.reminders.get(chatId);
-            String text = update.getMessage().getText();
-            LocalDate date = null;
-
-            try {
-                date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            } catch (Exception e) {
-                userState.push(states.get("wrongInputState"));
-                return;
-            }
-            newReminder.setDate(date);
-            userState.push(states.get("addingReminderTimeState"));
-
-        } else if (states.get("addingReminderTimeState").equals(peek)) {
-            Reminder newReminder = this.reminders.get(chatId);
-            String text = update.getMessage().getText();
-            LocalTime time = null;
-
-            try {
-                time = LocalTime.parse(text);
-            } catch (Exception e) {
-                userState.push(states.get("wrongInputState"));
-                return;
-            }
-            newReminder.setTime(time);
-
-            this.reminderService.saveReminder(newReminder);
-            reminderBot.sendReminder(newReminder);
-            reminderBot.sendMessage(Constant.SUCCESSFUL_ADDITION, chatId);
-            userState.push(states.get("choosingFirstActionState"));
-
-        } else {
-            userState.push(states.get("wrongInputState"));
+        Reminder tempReminder = reminders.get(chatId);
+        String text = update.getMessage().getText();
+        LocalDate date;
+        try {
+            date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } catch (Exception e) {
+            userState.push(statesMap.get("wrongInputState"));
+            return;
         }
+        tempReminder.setDate(date);
+        userState.push(statesMap.get("addingReminderTimeState"));
+    }
+
+    public void handleTime(Update update, Stack<UserState> userState) {
+        Long chatId = AbilityUtils.getChatId(update);
+
+        Reminder tempReminder = reminders.get(chatId);
+        String text = update.getMessage().getText();
+        LocalTime time;
+        try {
+            time = LocalTime.parse(text);
+        } catch (Exception e) {
+            userState.push(statesMap.get("wrongInputState"));
+            return;
+        }
+        tempReminder.setTime(time);
+
+        reminderService.saveReminder(tempReminder);
+        reminderBot.sendReminder(tempReminder);
+        reminderBot.sendMessage(Constant.SUCCESSFUL_ADDITION, chatId);
+        userState.push(statesMap.get("choosingFirstActionState"));
     }
 }

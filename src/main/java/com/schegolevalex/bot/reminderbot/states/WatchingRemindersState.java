@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class WatchingRemindersState extends UserState {
@@ -28,6 +28,8 @@ public class WatchingRemindersState extends UserState {
     @Override
     public SendMessage setText(SendMessage sendMessage) {
         List<Reminder> reminders = reminderService.getAllRemindersById(Long.valueOf(sendMessage.getChatId()));
+        reminders = reminders.stream().sorted().collect(Collectors.toList());
+
         StringBuilder text = new StringBuilder(Constant.MY_REMINDERS);
 
         if (reminders.isEmpty()) {

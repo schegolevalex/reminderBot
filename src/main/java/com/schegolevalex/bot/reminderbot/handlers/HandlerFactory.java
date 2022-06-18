@@ -33,7 +33,9 @@ public class HandlerFactory {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             return textHandler;
-        } else return wrongInputHandler;
+
+        } else
+            return wrongInputHandler;
 
     }
 }

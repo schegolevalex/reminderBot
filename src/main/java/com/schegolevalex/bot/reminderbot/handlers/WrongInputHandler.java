@@ -10,7 +10,7 @@ import java.util.Stack;
 public class WrongInputHandler extends Handler {
 
     @Override
-    public void handle(Update update, Stack<UserState> userState) {
-        userState.push(states.get("wrongInputState"));
+    public void handle(Update update, Stack<UserState> userStates) {
+        userStates.push(statesMap.get("wrongInputState"));
     }
 }

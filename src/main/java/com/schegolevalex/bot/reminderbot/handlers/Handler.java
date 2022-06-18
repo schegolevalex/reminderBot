@@ -9,7 +9,7 @@ import java.util.Stack;
 
 public abstract class Handler {
     @Autowired
-    Map<String, UserState> states;
+    Map<String, UserState> statesMap;
 
-    public abstract void handle(Update update, Stack<UserState> userState);
+    public abstract void handle(Update update, Stack<UserState> userStates);
 }

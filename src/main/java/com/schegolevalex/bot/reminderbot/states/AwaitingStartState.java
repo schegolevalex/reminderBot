@@ -1,6 +1,5 @@
 package com.schegolevalex.bot.reminderbot.states;
 
-import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ public class AwaitingStartState extends UserState {
 
     @Override
     public SendMessage setText(SendMessage sendMessage) {
-        sendMessage.setText(Constant.AWAITING_START_DESCRIPTION);
         sendMessage.setReplyMarkup(KeyboardFactory.withStartMessage());
         return sendMessage;
     }

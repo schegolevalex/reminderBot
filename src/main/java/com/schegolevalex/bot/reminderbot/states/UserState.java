@@ -16,7 +16,7 @@ public abstract class UserState {
         this.handlerFactory = handlerFactory;
     }
 
-    abstract SendMessage setText(SendMessage sendMessage);
+    public abstract SendMessage setText(SendMessage sendMessage);
 
     void process(Update update, Stack<UserState> userState) {
         Handler currentHandler = handlerFactory.getHandler(update);

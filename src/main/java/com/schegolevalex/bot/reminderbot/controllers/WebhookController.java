@@ -10,8 +10,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RestController
 public class WebhookController {
+    private final ReminderBot reminderBot;
+
     @Autowired
-    private ReminderBot reminderBot;
+    public WebhookController(ReminderBot reminderBot) {
+        this.reminderBot = reminderBot;
+    }
 
     @PostMapping("/")
     public BotApiMethod<?> getUpdate(@RequestBody Update update) {

@@ -7,36 +7,34 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import java.util.Map;
-
 @Component
 public class WrongInputState extends UserState {
 
     private ReminderFacade reminderFacade;
-    private final Map<String, UserState> statesMap;
 
     @Autowired
     public WrongInputState(@Lazy HandlerFactory handlerFactory,
-                           @Lazy ReminderFacade reminderFacade,
-                           Map<String, UserState> statesMap) {
+                           @Lazy ReminderFacade reminderFacade) {
         super(handlerFactory);
         this.reminderFacade = reminderFacade;
-        this.statesMap = statesMap;
     }
 
     @Override
     public SendMessage setText(SendMessage sendMessage) {
         Long chatId = Long.valueOf(sendMessage.getChatId());
         reminderFacade.getCurrentState(chatId).pop();
-        String name = reminderFacade.getCurrentState(chatId).peek().getClass().getSimpleName();
+        String previousState = reminderFacade.getCurrentState(chatId).peek().getClass().getSimpleName();
 
-        switch (name) {
+        switch (previousState) {
             case ("AddingReminderDateState"):
                 sendMessage.setText(Constant.WRONG_DATE_FORMAT);
+                break;
             case ("AddingReminderTimeState"):
                 sendMessage.setText(Constant.WRONG_TIME_FORMAT);
+                break;
             default:
                 sendMessage.setText(Constant.UNKNOWN_REQUEST);
+                break;
         }
         return sendMessage;
     }

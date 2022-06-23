@@ -33,8 +33,7 @@ public class ReminderFacade {
     public void process(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         Stack<UserState> userState = getCurrentState(chatId);
-        UserState peek = userStates.get(chatId).peek();
-                peek.process(update, userState);
+        userStates.get(chatId).peek().process(update, userState);
     }
 
     public SendMessage getReply(Long chatId) {

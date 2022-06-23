@@ -55,7 +55,9 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return reminderFacade.getResult(update);
+        BotApiMethod<?> result = reminderFacade.getResult(update);
+        sendMessage((SendMessage) result);
+        return result;
     }
 
     public void sendReminder(Reminder reminder) {
@@ -64,21 +66,23 @@ public class ReminderBot extends TelegramWebhookBot {
 
         if (now.isBefore(reminderDateTime)) {
             Date date = Date.from(reminderDateTime.toInstant(ZoneOffset.of("+3")));
-            taskScheduler.schedule(() ->
-                    sendMessage(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()),
-                            reminder.getChatID()), date);
+
+            SendMessage message = new SendMessage();
+            message.setChatId(String.valueOf(reminder.getChatID()));
+            message.setText(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()));
+
+            taskScheduler.schedule(() -> sendMessage(message), date);
         }
     }
 
-    public void sendMessage(String text, Long chatId) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setText(text);
-        sendMessage.setChatId(String.valueOf(chatId));
+    public int sendMessage(SendMessage sendMessage) {
+        int messageId = -1;
         try {
-            execute(sendMessage);
+            messageId = execute(sendMessage).getMessageId();
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+        return messageId;
     }
 
     @Override

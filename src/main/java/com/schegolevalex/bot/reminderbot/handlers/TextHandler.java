@@ -1,6 +1,5 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
-import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
@@ -51,7 +50,7 @@ public class TextHandler extends Handler {
         }
     }
 
-    public void handleText(Update update, Stack<UserState> userState) {
+    private void handleText(Update update, Stack<UserState> userState) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = new Reminder();
@@ -61,7 +60,7 @@ public class TextHandler extends Handler {
         userState.push(statesMap.get("addingReminderDateState"));
     }
 
-    public void handleDate(Update update, Stack<UserState> userState) {
+    private void handleDate(Update update, Stack<UserState> userState) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = reminders.get(chatId);
@@ -77,7 +76,7 @@ public class TextHandler extends Handler {
         userState.push(statesMap.get("addingReminderTimeState"));
     }
 
-    public void handleTime(Update update, Stack<UserState> userState) {
+    private void handleTime(Update update, Stack<UserState> userState) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = reminders.get(chatId);
@@ -93,7 +92,6 @@ public class TextHandler extends Handler {
 
         reminderService.saveReminder(tempReminder);
         reminderBot.sendReminder(tempReminder);
-        reminderBot.sendMessage(Constant.SUCCESSFUL_ADDITION, chatId);
-        userState.push(statesMap.get("choosingFirstActionState"));
+        userState.push(statesMap.get("successfulAdditionState"));
     }
 }

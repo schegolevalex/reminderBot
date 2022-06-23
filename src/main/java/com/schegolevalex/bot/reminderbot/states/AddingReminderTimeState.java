@@ -5,7 +5,8 @@ import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 @Component
 public class AddingReminderTimeState extends UserState {
@@ -15,9 +16,11 @@ public class AddingReminderTimeState extends UserState {
     }
 
     @Override
-    public SendMessage setText(SendMessage sendMessage) {
-        sendMessage.setText(Constant.ADDING_REMINDER_TIME_DESCRIPTION);
-        sendMessage.setReplyMarkup(KeyboardFactory.withBackButton());
-        return sendMessage;
+    public BotApiMethod prepareReply(Long chatId) {
+        EditMessageText editMessageText = new EditMessageText();
+        editMessageText.setChatId(String.valueOf(chatId));
+        editMessageText.setText(Constant.ADDING_REMINDER_TIME_DESCRIPTION);
+        editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
+        return editMessageText;
     }
 }

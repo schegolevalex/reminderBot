@@ -8,7 +8,8 @@ import com.schegolevalex.bot.reminderbot.services.ReminderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -26,8 +27,11 @@ public class WatchingRemindersState extends UserState {
     }
 
     @Override
-    public SendMessage setText(SendMessage sendMessage) {
-        List<Reminder> reminders = reminderService.getAllRemindersById(Long.valueOf(sendMessage.getChatId()));
+    public BotApiMethod prepareReply(Long chatId) {
+        EditMessageText editMessageText = new EditMessageText();
+        editMessageText.setChatId(String.valueOf(chatId));
+
+        List<Reminder> reminders = reminderService.getAllRemindersById(chatId);
         reminders = reminders.stream().sorted().collect(Collectors.toList());
 
         StringBuilder text = new StringBuilder(Constant.MY_REMINDERS);
@@ -52,8 +56,8 @@ public class WatchingRemindersState extends UserState {
                         .append("\n");
             }
         }
-        sendMessage.setText(String.valueOf(text));
-        sendMessage.setReplyMarkup(KeyboardFactory.withBackButton());
-        return sendMessage;
+        editMessageText.setText(String.valueOf(text));
+        editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
+        return editMessageText;
     }
 }

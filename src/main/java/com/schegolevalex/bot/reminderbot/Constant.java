@@ -3,7 +3,7 @@ package com.schegolevalex.bot.reminderbot;
 public interface Constant {
 //    String CHAT_STATES = "Состояния чата";
 
-//    String AWAITING_START_DESCRIPTION = "Для начала общения выберите команду /start";
+    String AWAITING_START_DESCRIPTION = "Для начала общения выберите команду /start";
     String CHOOSING_FIRST_ACTION_DESCRIPTION = "Выберите действие:";
     String ADDING_REMINDER_TEXT_DESCRIPTION = "1️⃣ Напишите, о чем Вам напомнить?";
     String ADDING_REMINDER_DATE_DESCRIPTION = "2️⃣ Когда Вам напомнить? Введите дату в формате \"ДД.ММ.ГГГГ\":";

@@ -1,7 +1,6 @@
 package com.schegolevalex.bot.reminderbot;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
@@ -9,8 +8,8 @@ import java.util.List;
 
 public class KeyboardFactory {
 
-    public static ReplyKeyboard withStartMessage() {
-        InlineKeyboardMarkup replyKeyboard = new InlineKeyboardMarkup();
+    public static InlineKeyboardMarkup withFirstActionMessage() {
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
@@ -24,12 +23,12 @@ public class KeyboardFactory {
         rowInline.add(button2);
         keyboard.add(rowInline);
 
-        replyKeyboard.setKeyboard(keyboard);
-        return replyKeyboard;
+        inlineKeyboard.setKeyboard(keyboard);
+        return inlineKeyboard;
     }
 
-    public static ReplyKeyboard withBackButton() {
-        InlineKeyboardMarkup replyKeyboard = new InlineKeyboardMarkup();
+    public static InlineKeyboardMarkup withBackButton() {
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
@@ -38,7 +37,7 @@ public class KeyboardFactory {
         rowInline.add(button);
         keyboard.add(rowInline);
 
-        replyKeyboard.setKeyboard(keyboard);
-        return replyKeyboard;
+        inlineKeyboard.setKeyboard(keyboard);
+        return inlineKeyboard;
     }
 }

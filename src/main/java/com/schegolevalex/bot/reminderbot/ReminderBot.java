@@ -43,19 +43,9 @@ public class ReminderBot extends TelegramWebhookBot {
     }
 
     @Override
-    public String getBotUsername() {
-        return botConfiguration.getUsername();
-    }
-
-    @Override
-    public String getBotToken() {
-        return botConfiguration.getBotToken();
-    }
-
-    @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         BotApiMethod<?> result = reminderFacade.getResult(update);
-        int messageId = executeMethod(result);
+        executeMethod(result);
         return result;
     }
 
@@ -74,16 +64,28 @@ public class ReminderBot extends TelegramWebhookBot {
         }
     }
 
-    public int executeMethod(BotApiMethod<?> method) {
-        int messageId = -1;
+    public void executeMethod(BotApiMethod<?> method) {
+        int messageId;
         try {
-            if (method instanceof SendMessage)
+            if (method instanceof SendMessage) {
                 messageId = execute((SendMessage) method).getMessageId();
-            else execute(method);
+                reminderFacade.setMessageIds(((SendMessage) method).getChatId(), messageId);
+            } else {
+                execute(method);
+            }
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        return messageId;
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botConfiguration.getUsername();
+    }
+
+    @Override
+    public String getBotToken() {
+        return botConfiguration.getBotToken();
     }
 
     @Override

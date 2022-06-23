@@ -4,7 +4,7 @@ import com.schegolevalex.bot.reminderbot.handlers.Handler;
 import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Stack;
@@ -17,7 +17,7 @@ public abstract class UserState {
         this.handlerFactory = handlerFactory;
     }
 
-    public abstract SendMessage setText(SendMessage sendMessage);
+    public abstract BotApiMethod prepareReply(Long chatId);
 
     public void process(Update update, Stack<UserState> userState) {
         Handler currentHandler = handlerFactory.getHandler(update);

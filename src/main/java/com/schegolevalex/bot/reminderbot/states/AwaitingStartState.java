@@ -17,7 +17,7 @@ public class AwaitingStartState extends UserState {
     }
 
     @Override
-    public BotApiMethod prepareReply(Long chatId) {
+    public BotApiMethod getReply(Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(Constant.AWAITING_START_DESCRIPTION);

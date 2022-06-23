@@ -16,7 +16,7 @@ public class AddingReminderTextState extends UserState {
     }
 
     @Override
-    public BotApiMethod prepareReply(Long chatId) {
+    public BotApiMethod getReply(Long chatId) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
         editMessageText.setText(Constant.ADDING_REMINDER_TEXT_DESCRIPTION);

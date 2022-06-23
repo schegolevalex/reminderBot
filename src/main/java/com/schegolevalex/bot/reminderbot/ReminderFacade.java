@@ -44,7 +44,7 @@ public class ReminderFacade {
 
     public BotApiMethod<?> getReply(Long chatId) {
         Stack<UserState> userState = getCurrentState(chatId);
-        BotApiMethod<?> botApiMethod = userState.peek().prepareReply(chatId);
+        BotApiMethod<?> botApiMethod = userState.peek().getReply(chatId);
         if (botApiMethod instanceof EditMessageText) {
             ((EditMessageText) botApiMethod).setMessageId(messageIds.get(String.valueOf(chatId)));
         }

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,15 +16,15 @@ import java.util.Stack;
 
 @Component
 public class TextHandler extends Handler {
-    private final Map<Long, Reminder> reminders;
+    private final Map<Long, Reminder> tempReminders;
     private final ReminderService reminderService;
     private final ReminderBot reminderBot;
 
     @Autowired
-    protected TextHandler(Map<Long, Reminder> reminders,
+    protected TextHandler(Map<Long, Reminder> tempReminders,
                           ReminderService reminderService,
                           ReminderBot reminderBot) {
-        this.reminders = reminders;
+        this.tempReminders = tempReminders;
         this.reminderService = reminderService;
         this.reminderBot = reminderBot;
     }
@@ -56,14 +55,14 @@ public class TextHandler extends Handler {
         Reminder tempReminder = new Reminder();
         tempReminder.setChatID(chatId);
         tempReminder.setText(update.getMessage().getText());
-        reminders.put(chatId, tempReminder);
+        tempReminders.put(chatId, tempReminder);
         userState.push(statesMap.get("addingReminderDateState"));
     }
 
     private void handleDate(Update update, Stack<UserState> userState) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        Reminder tempReminder = reminders.get(chatId);
+        Reminder tempReminder = tempReminders.get(chatId);
         String text = update.getMessage().getText();
         LocalDate date;
         try {
@@ -79,7 +78,7 @@ public class TextHandler extends Handler {
     private void handleTime(Update update, Stack<UserState> userState) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        Reminder tempReminder = reminders.get(chatId);
+        Reminder tempReminder = tempReminders.get(chatId);
         String text = update.getMessage().getText();
         LocalTime time;
         try {

@@ -22,7 +22,7 @@ public class WrongInputState extends UserState {
     }
 
     @Override
-    public BotApiMethod prepareReply(Long chatId) {
+    public BotApiMethod getReply(Long chatId) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
 

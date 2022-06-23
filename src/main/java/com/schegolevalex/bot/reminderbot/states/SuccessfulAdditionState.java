@@ -18,7 +18,7 @@ public class SuccessfulAdditionState extends UserState {
     }
 
     @Override
-    public BotApiMethod prepareReply(Long chatId) {
+    public BotApiMethod getReply(Long chatId) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
         editMessageText.setText(Constant.SUCCESSFUL_ADDITION + " " + Constant.CHOOSING_FIRST_ACTION_DESCRIPTION);

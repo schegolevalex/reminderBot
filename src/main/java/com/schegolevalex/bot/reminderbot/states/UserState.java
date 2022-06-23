@@ -17,7 +17,7 @@ public abstract class UserState {
         this.handlerFactory = handlerFactory;
     }
 
-    public abstract BotApiMethod prepareReply(Long chatId);
+    public abstract BotApiMethod getReply(Long chatId);
 
     public void process(Update update, Stack<UserState> userState) {
         Handler currentHandler = handlerFactory.getHandler(update);

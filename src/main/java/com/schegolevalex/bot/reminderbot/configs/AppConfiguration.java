@@ -22,7 +22,7 @@ public class AppConfiguration {
     }
 
     @Bean
-    public Map<Long, Reminder> reminders() {
+    public Map<Long, Reminder> tempReminders() {
         return new HashMap<>();
     }
 

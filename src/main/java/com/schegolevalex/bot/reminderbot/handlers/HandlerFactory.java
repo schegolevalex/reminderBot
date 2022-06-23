@@ -4,38 +4,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Map;
+
 @Component
 public class HandlerFactory {
 
-    private final TextHandler textHandler;
-    private final CommandHandler commandHandler;
-    private final CallbackHandler callbackHandler;
-    private final WrongInputHandler wrongInputHandler;
+    private final Map<String, Handler> handlerMap;
 
     @Autowired
-    public HandlerFactory(TextHandler textHandler,
-                          CommandHandler commandHandler,
-                          CallbackHandler callbackHandler,
-                          WrongInputHandler wrongInputHandler) {
-        this.textHandler = textHandler;
-        this.commandHandler = commandHandler;
-        this.callbackHandler = callbackHandler;
-        this.wrongInputHandler = wrongInputHandler;
+    public HandlerFactory(Map<String, Handler> handlerMap) {
+        this.handlerMap = handlerMap;
     }
 
     public Handler getHandler(Update update) {
 
         if (update.hasCallbackQuery())
-            return callbackHandler;
+            return handlerMap.get("callbackHandler");
 
         if (update.hasMessage() && update.getMessage().isCommand())
-            return commandHandler;
+            return handlerMap.get("commandHandler");
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            return textHandler;
+            return handlerMap.get("textHandler");
 
         } else
-            return wrongInputHandler;
-
+            return handlerMap.get("wrongInputHandler");
     }
 }

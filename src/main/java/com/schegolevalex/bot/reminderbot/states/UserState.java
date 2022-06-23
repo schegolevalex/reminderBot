@@ -19,7 +19,7 @@ public abstract class UserState {
 
     public abstract SendMessage setText(SendMessage sendMessage);
 
-    void process(Update update, Stack<UserState> userState) {
+    public void process(Update update, Stack<UserState> userState) {
         Handler currentHandler = handlerFactory.getHandler(update);
         currentHandler.handle(update, userState);
     }

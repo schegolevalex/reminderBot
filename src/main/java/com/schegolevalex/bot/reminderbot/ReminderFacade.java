@@ -1,5 +1,7 @@
-package com.schegolevalex.bot.reminderbot.states;
+package com.schegolevalex.bot.reminderbot;
 
+import com.schegolevalex.bot.reminderbot.states.AwaitingStartState;
+import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -43,7 +45,7 @@ public class ReminderFacade {
         return userState.peek().setText(sendMessage);
     }
 
-    protected Stack<UserState> getCurrentState(Long chatId) {
+    public Stack<UserState> getCurrentState(Long chatId) {
         Stack<UserState> userState;
 
         if (userStates.get(chatId) != null) {

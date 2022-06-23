@@ -3,7 +3,6 @@ package com.schegolevalex.bot.reminderbot;
 import com.schegolevalex.bot.reminderbot.configs.BotConfiguration;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
-import com.schegolevalex.bot.reminderbot.states.ReminderFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -56,7 +55,7 @@ public class ReminderBot extends TelegramWebhookBot {
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         BotApiMethod<?> result = reminderFacade.getResult(update);
-        sendMessage((SendMessage) result);
+        int messageId = executeMethod(result);
         return result;
     }
 
@@ -71,14 +70,16 @@ public class ReminderBot extends TelegramWebhookBot {
             message.setChatId(String.valueOf(reminder.getChatID()));
             message.setText(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()));
 
-            taskScheduler.schedule(() -> sendMessage(message), date);
+            taskScheduler.schedule(() -> executeMethod(message), date);
         }
     }
 
-    public int sendMessage(SendMessage sendMessage) {
+    public int executeMethod(BotApiMethod<?> method) {
         int messageId = -1;
         try {
-            messageId = execute(sendMessage).getMessageId();
+            if (method instanceof SendMessage)
+                messageId = execute((SendMessage) method).getMessageId();
+            else execute(method);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -121,8 +122,7 @@ public class ReminderBot extends TelegramWebhookBot {
     @PostConstruct
     private void registerPreviousReminders() {
         List<Reminder> allReminders = reminderService.getAllReminders();
-        for (Reminder reminder : allReminders) {
+        for (Reminder reminder : allReminders)
             sendReminder(reminder);
-        }
     }
 }

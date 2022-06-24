@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -47,6 +48,7 @@ public class TextHandler extends Handler {
                 userState.push(statesMap.get("wrongInputState"));
                 break;
         }
+        reminderBot.deleteMessage(update);
     }
 
     private void handleText(Update update, Stack<UserState> userState) {

@@ -6,12 +6,14 @@ import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
+import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -73,6 +75,20 @@ public class ReminderBot extends TelegramWebhookBot {
             } else {
                 execute(method);
             }
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteMessage(Update update) {
+        Integer messageId = update.getMessage().getMessageId();
+        String chatId = String.valueOf(AbilityUtils.getChatId(update));
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setChatId(chatId);
+        deleteMessage.setMessageId(messageId);
+
+        try {
+            execute(deleteMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

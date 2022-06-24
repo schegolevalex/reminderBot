@@ -18,7 +18,7 @@ public interface Constant {
     String GO_BACK = "Назад";
 
     String UNKNOWN_REQUEST = "Не понимаю... Давайте заново. Для начала общения выберите команду /start";
-    String SUCCESSFUL_ADDITION = "Напоминание успешно создано";
+    String SUCCESSFUL_ADDITION = "Напоминание c текстом \"%s\" успешно создано. Напомню %s в %s";
     String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод. Напоминаю, формат даты \"ДД.ММ.ГГГГ\":";
     String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод. Напоминаю, формат времени \"ЧЧ:ММ\":";
 

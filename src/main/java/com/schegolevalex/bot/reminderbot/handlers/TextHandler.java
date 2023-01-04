@@ -5,6 +5,7 @@ import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Stack;
 
@@ -24,44 +26,36 @@ public class TextHandler extends Handler {
     @Autowired
     protected TextHandler(Map<Long, Reminder> tempReminders,
                           ReminderService reminderService,
-                          ReminderBot reminderBot) {
+                          @Lazy ReminderBot reminderBot) {
         this.tempReminders = tempReminders;
         this.reminderService = reminderService;
         this.reminderBot = reminderBot;
     }
 
     @Override
-    public void handle(Update update, Stack<UserState> userState) {
-        String name = userState.peek().getClass().getSimpleName();
+    public void handle(Update update, Stack<UserState> userStateStack) {
+        String stateSimpleName = userStateStack.peek().getClass().getSimpleName();
 
-        switch (name) {
-            case "AddingReminderTextState":
-                handleText(update, userState);
-                break;
-            case "AddingReminderDateState":
-                handleDate(update, userState);
-                break;
-            case "AddingReminderTimeState":
-                handleTime(update, userState);
-                break;
-            default:
-                userState.push(statesMap.get("wrongInputState"));
-                break;
+        switch (stateSimpleName) {
+            case "AddingReminderTextState" -> handleText(update, userStateStack);
+            case "AddingReminderDateState" -> handleDate(update, userStateStack);
+            case "AddingReminderTimeState" -> handleTime(update, userStateStack);
+            default -> userStateStack.push(statesMap.get("wrongInputState"));
         }
         reminderBot.deleteMessage(update);
     }
 
-    private void handleText(Update update, Stack<UserState> userState) {
+    private void handleText(Update update, Stack<UserState> userStateStack) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = new Reminder();
         tempReminder.setChatID(chatId);
         tempReminder.setText(update.getMessage().getText());
         tempReminders.put(chatId, tempReminder);
-        userState.push(statesMap.get("addingReminderDateState"));
+        userStateStack.push(statesMap.get("addingReminderDateState"));
     }
 
-    private void handleDate(Update update, Stack<UserState> userState) {
+    private void handleDate(Update update, Stack<UserState> userStateStack) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = tempReminders.get(chatId);
@@ -69,15 +63,15 @@ public class TextHandler extends Handler {
         LocalDate date;
         try {
             date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        } catch (Exception e) {
-            userState.push(statesMap.get("wrongInputState"));
+        } catch (DateTimeParseException e) {
+            userStateStack.push(statesMap.get("wrongInputState"));
             return;
         }
         tempReminder.setDate(date);
-        userState.push(statesMap.get("addingReminderTimeState"));
+        userStateStack.push(statesMap.get("addingReminderTimeState"));
     }
 
-    private void handleTime(Update update, Stack<UserState> userState) {
+    private void handleTime(Update update, Stack<UserState> userStateStack) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = tempReminders.get(chatId);
@@ -85,14 +79,14 @@ public class TextHandler extends Handler {
         LocalTime time;
         try {
             time = LocalTime.parse(text);
-        } catch (Exception e) {
-            userState.push(statesMap.get("wrongInputState"));
+        } catch (DateTimeParseException e) {
+            userStateStack.push(statesMap.get("wrongInputState"));
             return;
         }
         tempReminder.setTime(time);
 
         reminderService.saveReminder(tempReminder);
         reminderBot.sendReminder(tempReminder);
-        userState.push(statesMap.get("successfulAdditionState"));
+        userStateStack.push(statesMap.get("successfulAdditionState"));
     }
 }

@@ -33,6 +33,7 @@ public class ReminderBot extends TelegramWebhookBot {
     private final ThreadPoolTaskScheduler taskScheduler;
     private final ReminderService reminderService;
 
+
     @Autowired
     public ReminderBot(BotConfiguration botConfiguration,
                        ReminderFacade reminderFacade,
@@ -66,23 +67,24 @@ public class ReminderBot extends TelegramWebhookBot {
         }
     }
 
-    public void executeMethod(BotApiMethod<?> method) {
+    private void executeMethod(BotApiMethod<?> method) {
         int messageId;
         try {
             if (method instanceof SendMessage) {
                 messageId = execute((SendMessage) method).getMessageId();
-                reminderFacade.setMessageIds(((SendMessage) method).getChatId(), messageId);
+                reminderFacade.putToMessageIds(((SendMessage) method).getChatId(), messageId);
             } else {
                 execute(method);
             }
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //todo залогировать ошибку и отправить пользователю сообщение, что произошла ошибка
         }
     }
 
     public void deleteMessage(Update update) {
-        Integer messageId = update.getMessage().getMessageId();
         String chatId = String.valueOf(AbilityUtils.getChatId(update));
+        Integer messageId = update.getMessage().getMessageId();
+
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setChatId(chatId);
         deleteMessage.setMessageId(messageId);
@@ -90,7 +92,7 @@ public class ReminderBot extends TelegramWebhookBot {
         try {
             execute(deleteMessage);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //todo залогировать ошибку и отправить пользователю сообщение, что произошла ошибка
         }
     }
 

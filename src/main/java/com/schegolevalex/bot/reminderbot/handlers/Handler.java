@@ -11,5 +11,5 @@ public abstract class Handler {
     @Autowired
     Map<String, UserState> statesMap;
 
-    public abstract void handle(Update update, Stack<UserState> userStates);
+    abstract void handle(Update update, Stack<UserState> userStateStack);
 }

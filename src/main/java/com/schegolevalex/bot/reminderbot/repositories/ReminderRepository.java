@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ReminderRepository extends JpaRepository<Reminder, Long> {
-    public List<Reminder> findRemindersByChatID(Long chatId);
+    List<Reminder> findAllByChatID(Long chatId);
 }

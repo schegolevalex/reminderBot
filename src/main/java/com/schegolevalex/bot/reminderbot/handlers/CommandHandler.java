@@ -10,15 +10,10 @@ import java.util.Stack;
 public class CommandHandler extends Handler {
 
     @Override
-    public void handle(Update update, Stack<UserState> userStates) {
+    public void handle(Update update, Stack<UserState> userStateStack) {
         switch (update.getMessage().getText()) {
-            case ("/start"):
-                userStates.push(statesMap.get("choosingFirstActionState"));
-                break;
-
-            default:
-                userStates.push(statesMap.get("wrongInputState"));
-                break;
+            case ("/start") -> userStateStack.push(statesMap.get("choosingFirstActionState"));
+            default -> userStateStack.push(statesMap.get("wrongInputState"));
         }
     }
 }

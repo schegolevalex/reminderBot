@@ -11,24 +11,13 @@ import java.util.Stack;
 public class CallbackHandler extends Handler {
 
     @Override
-    public void handle(Update update, Stack<UserState> userStates) {
+    public void handle(Update update, Stack<UserState> userStateStack) {
 
         switch (update.getCallbackQuery().getData()) {
-            case (Constant.GO_TO_MY_REMINDERS):
-                userStates.push(statesMap.get("watchingRemindersState"));
-                break;
-
-            case (Constant.GO_TO_ADD_REMINDER):
-                userStates.push(statesMap.get("addingReminderTextState"));
-                break;
-
-            case (Constant.GO_BACK):
-                userStates.pop();
-                break;
-
-            default:
-                userStates.push(statesMap.get("wrongInputState"));
-                break;
+            case (Constant.GO_TO_MY_REMINDERS) -> userStateStack.push(statesMap.get("watchingRemindersState"));
+            case (Constant.GO_TO_ADD_REMINDER) -> userStateStack.push(statesMap.get("addingReminderTextState"));
+            case (Constant.GO_BACK) -> userStateStack.pop();
+            default -> userStateStack.push(statesMap.get("wrongInputState"));
         }
     }
 }

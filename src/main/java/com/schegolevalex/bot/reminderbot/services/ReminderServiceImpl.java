@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReminderServiceImpl implements ReminderService {
@@ -30,13 +29,7 @@ public class ReminderServiceImpl implements ReminderService {
 
     @Override
     public Reminder getReminder(long id) {
-        Reminder reminder = null;
-        Optional<Reminder> optional = reminderRepository.findById(id);
-
-        if (optional.isPresent())
-            reminder = optional.get();
-
-        return reminder;
+        return reminderRepository.findById(id).get();
     }
 
     @Override
@@ -45,6 +38,6 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     public List<Reminder> getAllRemindersById(Long chatId) {
-        return reminderRepository.findRemindersByChatID(chatId);
+        return reminderRepository.findAllByChatID(chatId);
     }
 }

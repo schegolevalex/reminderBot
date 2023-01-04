@@ -3,17 +3,13 @@ package com.schegolevalex.bot.reminderbot.configs;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-
 @Configuration
-@ComponentScan(basePackages = "com.schegolevalex.bot.reminderbot")
 public class AppConfiguration {
 
     @Bean

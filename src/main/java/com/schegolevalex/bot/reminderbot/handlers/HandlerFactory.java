@@ -1,10 +1,12 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
+import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Map;
+import java.util.Stack;
 
 @Component
 public class HandlerFactory {
@@ -16,18 +18,18 @@ public class HandlerFactory {
         this.handlerMap = handlerMap;
     }
 
-    public Handler getHandler(Update update) {
+    public void handle(Update update, Stack<UserState> userStateStack) {
 
         if (update.hasCallbackQuery())
-            return handlerMap.get("callbackHandler");
+            handlerMap.get("callbackHandler").handle(update, userStateStack);
 
-        if (update.hasMessage() && update.getMessage().isCommand())
-            return handlerMap.get("commandHandler");
+        else if (update.hasMessage() && update.getMessage().isCommand())
+            handlerMap.get("commandHandler").handle(update, userStateStack);
 
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            return handlerMap.get("textHandler");
+        else if (update.hasMessage() && update.getMessage().hasText()) {
+            handlerMap.get("textHandler").handle(update, userStateStack);
 
         } else
-            return handlerMap.get("wrongInputHandler");
+            handlerMap.get("wrongInputHandler").handle(update, userStateStack);
     }
 }

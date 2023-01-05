@@ -48,7 +48,7 @@ public class ReminderFacade {
     public Stack<UserState> getCurrentStateStack(Long chatId) {
         Stack<UserState> userStateStack;
 
-        if (userStatesMap.get(chatId) == null) {
+        if (userStatesMap.get(chatId) == null || userStatesMap.get(chatId).empty()) {
             userStateStack = new Stack<>();
             userStateStack.push(awaitStartState);
             userStatesMap.put(chatId, userStateStack);

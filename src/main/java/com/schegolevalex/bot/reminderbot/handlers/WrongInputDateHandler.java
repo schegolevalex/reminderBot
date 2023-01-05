@@ -7,10 +7,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Stack;
 
 @Component
-public class WrongInputHandler extends Handler {
+public class WrongInputDateHandler extends Handler {
 
     @Override
     public void handle(Update update, Stack<UserState> userStateStack) {
-        userStateStack.push(statesMap.get("wrongInputState"));
+        userStateStack.push(statesMap.get("wrongInputDateState"));
     }
 }

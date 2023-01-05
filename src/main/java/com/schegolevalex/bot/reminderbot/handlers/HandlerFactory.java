@@ -26,10 +26,15 @@ public class HandlerFactory {
         else if (update.hasMessage() && update.getMessage().isCommand())
             handlerMap.get("commandHandler").handle(update, userStateStack);
 
-        else if (update.hasMessage() && update.getMessage().hasText()) {
+        else if (update.hasMessage() && update.getMessage().hasText())
             handlerMap.get("textHandler").handle(update, userStateStack);
 
-        } else
-            handlerMap.get("wrongInputHandler").handle(update, userStateStack);
+        else if (userStateStack.peek().getClass().getSimpleName().equals("AddingReminderDateState"))
+            handlerMap.get("wrongInputDateHandler").handle(update, userStateStack);
+
+        else if (userStateStack.peek().getClass().getSimpleName().equals("AddingReminderTimeState"))
+            handlerMap.get("wrongInputTimeHandler").handle(update, userStateStack);
+
+        else handlerMap.get("wrongInputCommonHandler").handle(update, userStateStack);
     }
 }

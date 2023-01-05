@@ -15,4 +15,6 @@ public interface ReminderService {
     void deleteReminder(long id);
 
     List<Reminder> getAllRemindersById(Long chatId);
+
+    void sendReminder(Reminder reminder);
 }

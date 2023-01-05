@@ -1,16 +1,14 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.configs.BotConfiguration;
-import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.meta.ApiConstants;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -19,29 +17,20 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Component
 public class ReminderBot extends TelegramWebhookBot {
 
     private final BotConfiguration botConfiguration;
-    private final ReminderFacade reminderFacade;
-    private final ThreadPoolTaskScheduler taskScheduler;
     private final ReminderService reminderService;
 
 
     @Autowired
     public ReminderBot(BotConfiguration botConfiguration,
-                       ReminderFacade reminderFacade,
-                       ThreadPoolTaskScheduler taskScheduler,
                        ReminderService reminderService) {
         this.botConfiguration = botConfiguration;
-        this.reminderFacade = reminderFacade;
-        this.taskScheduler = taskScheduler;
         this.reminderService = reminderService;
     }
 
@@ -51,35 +40,6 @@ public class ReminderBot extends TelegramWebhookBot {
 //        BotApiMethod<?> result = reminderFacade.perform(update);
 //        executeMethod(result);
 //        return result;
-    }
-
-    public void sendReminder(Reminder reminder) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reminderDateTime = reminder.getDate().atTime(reminder.getTime());
-
-        if (now.isBefore(reminderDateTime)) {
-            Date date = Date.from(reminderDateTime.toInstant(ZoneOffset.of("+3")));
-
-            SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(reminder.getChatID()));
-            message.setText(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()));
-
-            taskScheduler.schedule(() -> executeMethod(message), date);
-        }
-    }
-
-    private void executeMethod(BotApiMethod<?> method) {
-        int messageId;
-        try {
-            if (method instanceof SendMessage) {
-                messageId = execute((SendMessage) method).getMessageId();
-                reminderFacade.putToMessageIds(((SendMessage) method).getChatId(), messageId);
-            } else {
-                execute(method);
-            }
-        } catch (TelegramApiException e) {
-            e.printStackTrace(); //todo залогировать ошибку и отправить пользователю сообщение, что произошла ошибка
-        }
     }
 
     public void deleteMessage(Update update) {
@@ -116,7 +76,7 @@ public class ReminderBot extends TelegramWebhookBot {
     private void setOwnWebhook() {
         DeleteWebhook deleteWebhook = new DeleteWebhook();
         deleteWebhook.setDropPendingUpdates(true);
-        SetWebhook setWebhook = new SetWebhook("https://api.telegram.org/bot" + botConfiguration.getBotToken()
+        SetWebhook setWebhook = new SetWebhook(ApiConstants.BASE_URL + botConfiguration.getBotToken()
                 + "/" + SetWebhook.PATH + "?url=" + botConfiguration.getWebhookPath());
 
         try {
@@ -138,12 +98,5 @@ public class ReminderBot extends TelegramWebhookBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @PostConstruct
-    private void registerPreviousReminders() {
-        List<Reminder> allReminders = reminderService.getAllReminders();
-        for (Reminder reminder : allReminders)
-            sendReminder(reminder);
     }
 }

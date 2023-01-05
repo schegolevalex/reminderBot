@@ -5,7 +5,6 @@ import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
@@ -21,18 +20,18 @@ public class ChooseFirstActionState extends UserState {
     @SneakyThrows
     @Override
     public void sendReply(Long chatId, Map<String, Integer> messageIds) {
-        BotApiMethod<?> method;
         if (messageIds.get(String.valueOf(chatId)) == null) {
-            method = new SendMessage();
-            ((SendMessage) method).setChatId(String.valueOf(chatId));
-            ((SendMessage) method).setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
-            ((SendMessage) method).setReplyMarkup(KeyboardFactory.withFirstActionMessage());
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(String.valueOf(chatId));
+            sendMessage.setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
+            sendMessage.setReplyMarkup(KeyboardFactory.withFirstActionMessage());
+            messageIds.put(String.valueOf(chatId), bot.execute(sendMessage).getMessageId());
         } else {
-            method = new EditMessageText();
-            ((EditMessageText) method).setChatId(String.valueOf(chatId));
-            ((EditMessageText) method).setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
-            ((EditMessageText) method).setReplyMarkup(KeyboardFactory.withFirstActionMessage());
+            EditMessageText editMessageText = new EditMessageText();
+            editMessageText.setChatId(String.valueOf(chatId));
+            editMessageText.setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
+            editMessageText.setReplyMarkup(KeyboardFactory.withFirstActionMessage());
+            bot.execute(editMessageText);
         }
-        bot.execute(method);
     }
 }

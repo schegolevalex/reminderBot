@@ -21,6 +21,6 @@ public class AwaitStartState extends UserState {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(Constant.AWAIT_START_DESCRIPTION);
-        bot.execute(sendMessage);
+        messageIds.put(String.valueOf(chatId), bot.execute(sendMessage).getMessageId());
     }
 }

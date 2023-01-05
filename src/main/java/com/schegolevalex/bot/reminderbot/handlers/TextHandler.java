@@ -1,11 +1,9 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
-import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -21,15 +19,12 @@ import java.util.Stack;
 public class TextHandler extends Handler {
     private final Map<Long, Reminder> tempReminders;
     private final ReminderService reminderService;
-    private final ReminderBot reminderBot;
 
     @Autowired
     protected TextHandler(Map<Long, Reminder> tempReminders,
-                          ReminderService reminderService,
-                          @Lazy ReminderBot reminderBot) {
+                          ReminderService reminderService) {
         this.tempReminders = tempReminders;
         this.reminderService = reminderService;
-        this.reminderBot = reminderBot;
     }
 
     @Override
@@ -37,15 +32,15 @@ public class TextHandler extends Handler {
         String stateSimpleName = userStateStack.peek().getClass().getSimpleName();
 
         switch (stateSimpleName) {
-            case "AddReminderTextState" -> handleText(update, userStateStack);
+            case "AddReminderTextState" -> handleMessage(update, userStateStack);
             case "AddReminderDateState" -> handleDate(update, userStateStack);
             case "AddReminderTimeState" -> handleTime(update, userStateStack);
             default -> userStateStack.push(statesMap.get("wrongInputState"));
         }
-        reminderBot.deleteMessage(update);
+//        reminderBot.deleteMessage(update);
     }
 
-    private void handleText(Update update, Stack<UserState> userStateStack) {
+    private void handleMessage(Update update, Stack<UserState> userStateStack) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = new Reminder();
@@ -86,7 +81,7 @@ public class TextHandler extends Handler {
         tempReminder.setTime(time);
 
         reminderService.saveReminder(tempReminder);
-        reminderBot.sendReminder(tempReminder);
+        reminderService.sendReminder(tempReminder);
         userStateStack.push(statesMap.get("successfulAdditionState"));
     }
 }

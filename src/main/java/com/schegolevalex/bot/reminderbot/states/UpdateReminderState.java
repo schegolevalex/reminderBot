@@ -1,10 +1,16 @@
 package com.schegolevalex.bot.reminderbot.states;
 
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
-public class UpdateReminderState implements UserState{
+import java.util.Map;
+
+public class UpdateReminderState extends UserState {
+
+    public UpdateReminderState(TelegramWebhookBot bot) {
+        super(bot);
+    }
+
     @Override
-    public BotApiMethod<?> sendReply(Long chatId) {
-        return null; // todo
+    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
     }
 }

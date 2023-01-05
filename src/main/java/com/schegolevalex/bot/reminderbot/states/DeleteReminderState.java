@@ -4,27 +4,27 @@ import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class DeleteReminderState implements UserState {
+public class DeleteReminderState extends UserState {
     private final ReminderService reminderService;
 
-    @Autowired
-    public DeleteReminderState(ReminderService reminderService) {
+    public DeleteReminderState(TelegramWebhookBot bot, ReminderService reminderService) {
+        super(bot);
         this.reminderService = reminderService;
     }
 
     @Override
-    public BotApiMethod<?> sendReply(Long chatId) {
+    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
 
@@ -55,6 +55,6 @@ public class DeleteReminderState implements UserState {
         }
         editMessageText.setText(String.valueOf(text));
         editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
-        return editMessageText;
+//        return editMessageText;
     }
 }

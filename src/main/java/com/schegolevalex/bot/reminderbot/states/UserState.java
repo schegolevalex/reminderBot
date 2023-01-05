@@ -1,7 +1,19 @@
 package com.schegolevalex.bot.reminderbot.states;
 
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
-public interface UserState {
-    BotApiMethod<?> sendReply(Long chatId);
+import java.util.Map;
+
+@Component
+public abstract class UserState {
+    final TelegramWebhookBot bot;
+
+    @Autowired
+    public UserState(TelegramWebhookBot bot) {
+        this.bot = bot;
+    }
+
+    public abstract void sendReply(Long chatId, Map<String, Integer> messageIds);
 }

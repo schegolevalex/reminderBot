@@ -2,19 +2,27 @@ package com.schegolevalex.bot.reminderbot.states;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Component
-public class AddReminderTextState implements UserState {
+import java.util.Map;
 
+@Component
+public class AddReminderTextState extends UserState {
+
+    public AddReminderTextState(TelegramWebhookBot bot) {
+        super(bot);
+    }
+
+    @SneakyThrows
     @Override
-    public BotApiMethod<?> sendReply(Long chatId) {
+    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
         editMessageText.setText(Constant.ADD_REMINDER_TEXT_DESCRIPTION);
         editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
-        return editMessageText;
+        bot.execute(editMessageText);
     }
 }

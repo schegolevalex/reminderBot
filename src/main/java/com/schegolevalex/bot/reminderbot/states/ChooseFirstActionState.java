@@ -2,28 +2,27 @@ package com.schegolevalex.bot.reminderbot.states;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
-import com.schegolevalex.bot.reminderbot.ReminderFacade;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Component
-public class ChooseFirstActionState implements UserState {
-    private final ReminderFacade reminderFacade;
+import java.util.Map;
 
-    @Autowired
-    public ChooseFirstActionState(@Lazy ReminderFacade reminderFacade) {
-        this.reminderFacade = reminderFacade;
+@Component
+public class ChooseFirstActionState extends UserState {
+
+    public ChooseFirstActionState(TelegramWebhookBot bot) {
+        super(bot);
     }
 
+    @SneakyThrows
     @Override
-    public BotApiMethod<?> sendReply(Long chatId) {
-
+    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
         BotApiMethod<?> method;
-        if (reminderFacade.getMessageIds().get(String.valueOf(chatId)) == null) {
+        if (messageIds.get(String.valueOf(chatId)) == null) {
             method = new SendMessage();
             ((SendMessage) method).setChatId(String.valueOf(chatId));
             ((SendMessage) method).setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
@@ -34,6 +33,6 @@ public class ChooseFirstActionState implements UserState {
             ((EditMessageText) method).setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
             ((EditMessageText) method).setReplyMarkup(KeyboardFactory.withFirstActionMessage());
         }
-        return method;
+        bot.execute(method);
     }
 }

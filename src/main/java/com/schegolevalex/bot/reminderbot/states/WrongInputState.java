@@ -2,24 +2,26 @@ package com.schegolevalex.bot.reminderbot.states;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.ReminderFacade;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
+import java.util.Map;
+
 @Component
-public class WrongInputState implements UserState {
+public class WrongInputState extends UserState {
 
     private final ReminderFacade reminderFacade;
 
-    @Autowired
-    public WrongInputState(@Lazy ReminderFacade reminderFacade) {
+    public WrongInputState(TelegramWebhookBot bot, ReminderFacade reminderFacade) {
+        super(bot);
         this.reminderFacade = reminderFacade;
     }
 
+    @SneakyThrows
     @Override
-    public BotApiMethod<?> sendReply(Long chatId) {
+    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
 
@@ -31,6 +33,6 @@ public class WrongInputState implements UserState {
             case ("AddingReminderTimeState") -> editMessageText.setText(Constant.WRONG_TIME_FORMAT);
             default -> editMessageText.setText(Constant.UNKNOWN_REQUEST);
         }
-        return editMessageText;
+        bot.execute(editMessageText);
     }
 }

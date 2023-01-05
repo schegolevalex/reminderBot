@@ -11,11 +11,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 @Component
-public class ChoosingFirstActionState implements UserState {
+public class ChooseFirstActionState implements UserState {
     private final ReminderFacade reminderFacade;
 
     @Autowired
-    public ChoosingFirstActionState(@Lazy ReminderFacade reminderFacade) {
+    public ChooseFirstActionState(@Lazy ReminderFacade reminderFacade) {
         this.reminderFacade = reminderFacade;
     }
 
@@ -26,12 +26,12 @@ public class ChoosingFirstActionState implements UserState {
         if (reminderFacade.getMessageIds().get(String.valueOf(chatId)) == null) {
             method = new SendMessage();
             ((SendMessage) method).setChatId(String.valueOf(chatId));
-            ((SendMessage) method).setText(Constant.CHOOSING_FIRST_ACTION_DESCRIPTION);
+            ((SendMessage) method).setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
             ((SendMessage) method).setReplyMarkup(KeyboardFactory.withFirstActionMessage());
         } else {
             method = new EditMessageText();
             ((EditMessageText) method).setChatId(String.valueOf(chatId));
-            ((EditMessageText) method).setText(Constant.CHOOSING_FIRST_ACTION_DESCRIPTION);
+            ((EditMessageText) method).setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
             ((EditMessageText) method).setReplyMarkup(KeyboardFactory.withFirstActionMessage());
         }
         return method;

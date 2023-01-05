@@ -12,7 +12,7 @@ public class CommandHandler extends Handler {
     @Override
     public void handle(Update update, Stack<UserState> userStateStack) {
         switch (update.getMessage().getText()) {
-            case ("/start") -> userStateStack.push(statesMap.get("choosingFirstActionState"));
+            case ("/start") -> userStateStack.push(statesMap.get("chooseFirstActionState"));
             default -> userStateStack.push(statesMap.get("wrongInputState"));
         }
     }

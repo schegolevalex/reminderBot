@@ -3,11 +3,11 @@ package com.schegolevalex.bot.reminderbot;
 public interface Constant {
 //    String CHAT_STATES = "Состояния чата";
 
-    String AWAITING_START_DESCRIPTION = "Для начала общения выберите команду /start";
-    String CHOOSING_FIRST_ACTION_DESCRIPTION = "Выберите действие:";
-    String ADDING_REMINDER_TEXT_DESCRIPTION = "1️⃣ Напишите, о чем Вам напомнить?";
-    String ADDING_REMINDER_DATE_DESCRIPTION = "2️⃣ Когда Вам напомнить? Введите дату в формате \"ДД.ММ.ГГГГ\":";
-    String ADDING_REMINDER_TIME_DESCRIPTION = "3️⃣ Во сколько Вам напомнить? Введите время в формате \"ЧЧ:ММ\":";
+    String AWAIT_START_DESCRIPTION = "Для начала общения выберите команду /start";
+    String CHOOSE_FIRST_ACTION_DESCRIPTION = "Выберите действие:";
+    String ADD_REMINDER_TEXT_DESCRIPTION = "1️⃣ Напишите, о чем Вам напомнить?";
+    String ADD_REMINDER_DATE_DESCRIPTION = "2️⃣ Когда Вам напомнить? Введите дату в формате \"ДД.ММ.ГГГГ\":";
+    String ADD_REMINDER_TIME_DESCRIPTION = "3️⃣ Во сколько Вам напомнить? Введите время в формате \"ЧЧ:ММ\":";
     String MY_REMINDERS = "Ваши напоминания:" + "\n";
 
 
@@ -15,6 +15,8 @@ public interface Constant {
     String GO_TO_MAIN = "Переход в /main";
     String GO_TO_MY_REMINDERS = "Мои напоминания /reminders";
     String GO_TO_ADD_REMINDER = "Добавить напоминание /addReminder";
+    String GO_TO_UPDATE_REMINDER = "Изменить напоминание /updateReminder";
+    String GO_TO_DELETE_REMINDER = "Удалить напоминание /deleteReminder";
     String GO_BACK = "Назад";
 
     String UNKNOWN_REQUEST = "Не понимаю... Давайте заново. Для начала общения выберите команду /start";

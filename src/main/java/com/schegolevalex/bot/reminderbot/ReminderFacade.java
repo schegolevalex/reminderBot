@@ -1,7 +1,7 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
-import com.schegolevalex.bot.reminderbot.states.AwaitingStartState;
+import com.schegolevalex.bot.reminderbot.states.AwaitStartState;
 import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,17 +18,17 @@ import java.util.Stack;
 public class ReminderFacade {
 
     private final Map<Long, Stack<UserState>> userStatesMap;
-    private final AwaitingStartState awaitingStartState;
+    private final AwaitStartState awaitStartState;
     private final HandlerFactory handlerFactory;
 
     private final Map<String, Integer> messageIds;
 
     @Autowired
     public ReminderFacade(Map<Long, Stack<UserState>> userStatesMap,
-                          AwaitingStartState awaitingStartState,
+                          AwaitStartState awaitStartState,
                           HandlerFactory handlerFactory) {
         this.userStatesMap = userStatesMap;
-        this.awaitingStartState = awaitingStartState;
+        this.awaitStartState = awaitStartState;
         this.handlerFactory = handlerFactory;
         messageIds = new HashMap<>();
     }
@@ -58,7 +58,7 @@ public class ReminderFacade {
 
         if (userStatesMap.get(chatId) == null) {
             userStateStack = new Stack<>();
-            userStateStack.push(awaitingStartState);
+            userStateStack.push(awaitStartState);
             userStatesMap.put(chatId, userStateStack);
         } else userStateStack = userStatesMap.get(chatId);
 

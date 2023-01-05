@@ -37,6 +37,7 @@ public class ReminderServiceImpl implements ReminderService {
         reminderRepository.deleteById(id);
     }
 
+    @Override
     public List<Reminder> getAllRemindersById(Long chatId) {
         return reminderRepository.findAllByChatID(chatId);
     }

@@ -37,9 +37,9 @@ public class TextHandler extends Handler {
         String stateSimpleName = userStateStack.peek().getClass().getSimpleName();
 
         switch (stateSimpleName) {
-            case "AddingReminderTextState" -> handleText(update, userStateStack);
-            case "AddingReminderDateState" -> handleDate(update, userStateStack);
-            case "AddingReminderTimeState" -> handleTime(update, userStateStack);
+            case "AddReminderTextState" -> handleText(update, userStateStack);
+            case "AddReminderDateState" -> handleDate(update, userStateStack);
+            case "AddReminderTimeState" -> handleTime(update, userStateStack);
             default -> userStateStack.push(statesMap.get("wrongInputState"));
         }
         reminderBot.deleteMessage(update);
@@ -52,7 +52,7 @@ public class TextHandler extends Handler {
         tempReminder.setChatID(chatId);
         tempReminder.setText(update.getMessage().getText());
         tempReminders.put(chatId, tempReminder);
-        userStateStack.push(statesMap.get("addingReminderDateState"));
+        userStateStack.push(statesMap.get("addReminderDateState"));
     }
 
     private void handleDate(Update update, Stack<UserState> userStateStack) {
@@ -68,7 +68,7 @@ public class TextHandler extends Handler {
             return;
         }
         tempReminder.setDate(date);
-        userStateStack.push(statesMap.get("addingReminderTimeState"));
+        userStateStack.push(statesMap.get("addReminderTimeState"));
     }
 
     private void handleTime(Update update, Stack<UserState> userStateStack) {

@@ -27,7 +27,7 @@ public class SuccessfulAdditionState implements UserState {
         editMessageText.setText(String.format(Constant.SUCCESSFUL_ADDITION,
                 tempReminders.get(chatId).getText(),
                 tempReminders.get(chatId).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                tempReminders.get(chatId).getTime()) + "\n" + Constant.CHOOSING_FIRST_ACTION_DESCRIPTION);
+                tempReminders.get(chatId).getTime()) + "\n" + Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
 
         editMessageText.setReplyMarkup(KeyboardFactory.withFirstActionMessage());
         return editMessageText;

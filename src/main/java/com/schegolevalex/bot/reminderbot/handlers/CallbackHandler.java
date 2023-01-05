@@ -14,8 +14,10 @@ public class CallbackHandler extends Handler {
     public void handle(Update update, Stack<UserState> userStateStack) {
 
         switch (update.getCallbackQuery().getData()) {
-            case (Constant.GO_TO_MY_REMINDERS) -> userStateStack.push(statesMap.get("watchingRemindersState"));
-            case (Constant.GO_TO_ADD_REMINDER) -> userStateStack.push(statesMap.get("addingReminderTextState"));
+            case (Constant.GO_TO_MY_REMINDERS) -> userStateStack.push(statesMap.get("watchRemindersState"));
+            case (Constant.GO_TO_ADD_REMINDER) -> userStateStack.push(statesMap.get("addReminderTextState"));
+            case (Constant.GO_TO_UPDATE_REMINDER) -> userStateStack.push(statesMap.get("updateReminderState"));
+            case (Constant.GO_TO_DELETE_REMINDER) -> userStateStack.push(statesMap.get("deleteReminderState"));
             case (Constant.GO_BACK) -> userStateStack.pop();
             default -> userStateStack.push(statesMap.get("wrongInputState"));
         }

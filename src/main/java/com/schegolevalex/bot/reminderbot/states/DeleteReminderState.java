@@ -3,7 +3,7 @@ package com.schegolevalex.bot.reminderbot.states;
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
-import com.schegolevalex.bot.reminderbot.services.ReminderServiceImpl;
+import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class WatchingRemindersState implements UserState {
-    private final ReminderServiceImpl reminderService;
+public class DeleteReminderState implements UserState {
+    private final ReminderService reminderService;
 
     @Autowired
-    public WatchingRemindersState(ReminderServiceImpl reminderService) {
+    public DeleteReminderState(ReminderService reminderService) {
         this.reminderService = reminderService;
     }
 

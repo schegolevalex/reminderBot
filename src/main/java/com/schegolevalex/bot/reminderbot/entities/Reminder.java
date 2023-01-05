@@ -1,5 +1,6 @@
 package com.schegolevalex.bot.reminderbot.entities;
 
+import com.sun.istack.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,13 +12,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "reminders")
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Reminder implements Comparable<Reminder> {
+@Entity
+@Table(name = "reminders")
+public class Reminder implements Comparable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reminder_id", nullable = false)
@@ -54,8 +55,10 @@ public class Reminder implements Comparable<Reminder> {
     }
 
     @Override
-    public int compareTo(Reminder other) {
+    public int compareTo(@NotNull Object o) {
         LocalDateTime thisReminderDateTime = this.getDate().atTime(this.getTime());
+
+        Reminder other = (Reminder) o;
         LocalDateTime otherReminderDateTime = other.getDate().atTime(other.getTime());
         return thisReminderDateTime.compareTo(otherReminderDateTime);
     }

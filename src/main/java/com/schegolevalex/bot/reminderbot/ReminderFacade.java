@@ -1,7 +1,6 @@
 package com.schegolevalex.bot.reminderbot;
 
-import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
-import com.schegolevalex.bot.reminderbot.states.AwaitingStartState;
+import com.schegolevalex.bot.reminderbot.states.ChoosingFirstActionState;
 import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,34 +17,33 @@ import java.util.Stack;
 public class ReminderFacade {
 
     private final Map<Long, Stack<UserState>> userStatesMap;
-    private final AwaitingStartState awaitingStartState;
-    private final HandlerFactory handlerFactory;
+    private final ChoosingFirstActionState choosingFirstActionState;
 
     private final Map<String, Integer> messageIds;
 
     @Autowired
     public ReminderFacade(Map<Long, Stack<UserState>> userStatesMap,
-                          AwaitingStartState awaitingStartState,
-                          HandlerFactory handlerFactory) {
+                          ChoosingFirstActionState choosingFirstActionState) {
         this.userStatesMap = userStatesMap;
-        this.awaitingStartState = awaitingStartState;
-        this.handlerFactory = handlerFactory;
+        this.choosingFirstActionState = choosingFirstActionState;
         messageIds = new HashMap<>();
     }
 
     public BotApiMethod<?> getResult(Update update) {
-        process(update);
-        return getBotApiMethod(AbilityUtils.getChatId(update));
-    }
-
-    private void process(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        Stack<UserState> userStateStack = getCurrentStateStack(chatId);
-        handlerFactory.handle(update, userStateStack);
+
+        process(update);
+        return getReply(chatId);
     }
 
-    private BotApiMethod<?> getBotApiMethod(Long chatId) {
-        Stack<UserState> userState = getCurrentStateStack(chatId);
+    public void process(Update update) {
+        Long chatId = AbilityUtils.getChatId(update);
+        Stack<UserState> userState = getCurrentState(chatId);
+        userStatesMap.get(chatId).peek().process(update, userState);
+    }
+
+    public BotApiMethod<?> getReply(Long chatId) {
+        Stack<UserState> userState = getCurrentState(chatId);
         BotApiMethod<?> botApiMethod = userState.peek().getReply(chatId);
         if (botApiMethod instanceof EditMessageText) {
             ((EditMessageText) botApiMethod).setMessageId(messageIds.get(String.valueOf(chatId)));
@@ -53,19 +51,20 @@ public class ReminderFacade {
         return botApiMethod;
     }
 
-    public Stack<UserState> getCurrentStateStack(Long chatId) {
-        Stack<UserState> userStateStack;
+    public Stack<UserState> getCurrentState(Long chatId) {
+        Stack<UserState> userState;
 
-        if (userStatesMap.get(chatId) == null) {
-            userStateStack = new Stack<>();
-            userStateStack.push(awaitingStartState);
-            userStatesMap.put(chatId, userStateStack);
-        } else userStateStack = userStatesMap.get(chatId);
-
-        return userStateStack;
+        if (userStatesMap.get(chatId) != null) {
+            userState = userStatesMap.get(chatId);
+        } else {
+            userState = new Stack<>();
+            userState.push(choosingFirstActionState);
+            userStatesMap.put(chatId, userState);
+        }
+        return userState;
     }
 
-    public void putToMessageIds(String chatId, Integer messageId) {
+    public void setMessageIds(String chatId, Integer messageId) {
         messageIds.put(chatId, messageId);
     }
 

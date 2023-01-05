@@ -3,28 +3,31 @@ package com.schegolevalex.bot.reminderbot.states;
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
+import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
 import com.schegolevalex.bot.reminderbot.services.ReminderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class WatchingRemindersState implements UserState {
+public class WatchingRemindersState extends UserState {
     private final ReminderServiceImpl reminderService;
 
     @Autowired
-    public WatchingRemindersState(ReminderServiceImpl reminderService) {
+    public WatchingRemindersState(@Lazy HandlerFactory handlerFactory,
+                                  ReminderServiceImpl reminderService) {
+        super(handlerFactory);
         this.reminderService = reminderService;
     }
 
     @Override
-    public BotApiMethod<?> getReply(Long chatId) {
+    public BotApiMethod getReply(Long chatId) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
 

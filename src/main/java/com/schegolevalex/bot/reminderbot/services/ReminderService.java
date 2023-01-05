@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface ReminderService {
 
-    List<Reminder> getAllReminders();
+    public List<Reminder> getAllReminders();
 
-    void saveReminder(Reminder reminder);
+    public void saveReminder(Reminder reminder);
 
-    Reminder getReminder(long id);
+    public Reminder getReminder(long id);
 
-    void deleteReminder(long id);
+    public void deleteReminder(long id);
 }

@@ -6,8 +6,6 @@ import com.schegolevalex.bot.reminderbot.states.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
@@ -33,25 +31,19 @@ public class ReminderFacade {
         messageIds = new HashMap<>();
     }
 
-    public BotApiMethod<?> getResult(Update update) {
-        process(update);
-        return getBotApiMethod(AbilityUtils.getChatId(update));
-    }
-
-    private void process(Update update) {
+    public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         Stack<UserState> userStateStack = getCurrentStateStack(chatId);
+
         handlerFactory.handle(update, userStateStack);
+        userStateStack.peek().sendReply(chatId);
+
+//        if (botApiMethod instanceof EditMessageText) {
+//            ((EditMessageText) botApiMethod).setMessageId(messageIds.get(String.valueOf(chatId)));
+//        }
+//        return botApiMethod;
     }
 
-    private BotApiMethod<?> getBotApiMethod(Long chatId) {
-        Stack<UserState> userState = getCurrentStateStack(chatId);
-        BotApiMethod<?> botApiMethod = userState.peek().getReply(chatId);
-        if (botApiMethod instanceof EditMessageText) {
-            ((EditMessageText) botApiMethod).setMessageId(messageIds.get(String.valueOf(chatId)));
-        }
-        return botApiMethod;
-    }
 
     public Stack<UserState> getCurrentStateStack(Long chatId) {
         Stack<UserState> userStateStack;

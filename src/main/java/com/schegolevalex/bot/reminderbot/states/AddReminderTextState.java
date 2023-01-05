@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 public class AddReminderTextState implements UserState {
 
     @Override
-    public BotApiMethod<?> getReply(Long chatId) {
+    public BotApiMethod<?> sendReply(Long chatId) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
         editMessageText.setText(Constant.ADD_REMINDER_TEXT_DESCRIPTION);

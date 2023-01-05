@@ -20,7 +20,7 @@ public class ChooseFirstActionState implements UserState {
     }
 
     @Override
-    public BotApiMethod<?> getReply(Long chatId) {
+    public BotApiMethod<?> sendReply(Long chatId) {
 
         BotApiMethod<?> method;
         if (reminderFacade.getMessageIds().get(String.valueOf(chatId)) == null) {

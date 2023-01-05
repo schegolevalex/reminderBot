@@ -24,7 +24,7 @@ public class WatchRemindersState implements UserState {
     }
 
     @Override
-    public BotApiMethod<?> getReply(Long chatId) {
+    public BotApiMethod<?> sendReply(Long chatId) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
 

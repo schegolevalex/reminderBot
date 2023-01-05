@@ -47,9 +47,10 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        BotApiMethod<?> result = reminderFacade.getResult(update);
-        executeMethod(result);
-        return result;
+        return null;
+//        BotApiMethod<?> result = reminderFacade.perform(update);
+//        executeMethod(result);
+//        return result;
     }
 
     public void sendReminder(Reminder reminder) {

@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 public class AwaitStartState implements UserState {
 
     @Override
-    public BotApiMethod<?> getReply(Long chatId) {
+    public BotApiMethod<?> sendReply(Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(Constant.AWAIT_START_DESCRIPTION);

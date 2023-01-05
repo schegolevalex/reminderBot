@@ -18,6 +18,6 @@ public class WebhookController {
 
     @PostMapping("/")
     public void getUpdate(@RequestBody Update update) {
-        facade.getResult(update);
+        facade.perform(update);
     }
 }

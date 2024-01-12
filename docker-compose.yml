@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+  #  todo-bot-application-application:
+  #    container_name: todo-bot-application
+  #    image: 'schegolevalex/todo-bot-application:0.0.1-SNAPSHOT'
+  #    ports:
+  #      - "8888:8080"
+  #    depends_on:
+  #      todo-database:
+  #        condition: service_healthy
+  #
+  #    environment:
+  #      - SERVER_PORT=8080
+  #      - SPRING_DATASOURCE_URL=jdbc:postgresql://todo-database:5432/postgres
+  #
+  #      - SPRING_DATASOURCE_USERNAME=postgres
+  #      - SPRING_DATASOURCE_PASSWORD=test
+  #      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+  #      - SPRING_JPA_SHOW-SQL=true
+
+  todo-database:
+    container_name: todo-database
+    image: postgres
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+
+

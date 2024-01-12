@@ -15,7 +15,7 @@ import java.util.Stack;
 
 @Component
 @RequiredArgsConstructor
-public class ReminderService {
+public class ReminderFacade {
 
     private final Map<Long, Stack<AbstractReplier>> userStatesMap;
     private final AwaitStartReplier awaitStartReplier;

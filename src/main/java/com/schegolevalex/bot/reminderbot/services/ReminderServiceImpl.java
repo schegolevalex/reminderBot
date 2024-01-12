@@ -5,17 +5,18 @@ import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.repositories.ReminderRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +37,8 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Reminder getReminder(long id) {
-        return reminderRepository.findById(id).get();
+    public Optional<Reminder> getReminder(long id) {
+        return reminderRepository.findById(id);
     }
 
     @Override
@@ -66,17 +67,14 @@ public class ReminderServiceImpl implements ReminderService {
         }
     }
 
+    @SneakyThrows
     private void executeMethod(BotApiMethod<?> method) {
         int messageId;
-        try {
-            if (method instanceof SendMessage) {
-                messageId = bot.execute((SendMessage) method).getMessageId();
+        if (method instanceof SendMessage) {
+            messageId = bot.execute((SendMessage) method).getMessageId();
 //                reminderFacade.putToMessageIds(((SendMessage) method).getChatId(), messageId);
-            } else {
-                bot.execute(method);
-            }
-        } catch (TelegramApiException e) {
-            e.printStackTrace(); //todo залогировать ошибку и отправить пользователю сообщение, что произошла ошибка
+        } else {
+            bot.execute(method);
         }
     }
 

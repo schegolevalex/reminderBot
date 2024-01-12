@@ -3,6 +3,7 @@ package com.schegolevalex.bot.reminderbot.services;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReminderService {
 
@@ -10,7 +11,7 @@ public interface ReminderService {
 
     void saveReminder(Reminder reminder);
 
-    Reminder getReminder(long id);
+    Optional<Reminder> getReminder(long id);
 
     void deleteReminder(long id);
 

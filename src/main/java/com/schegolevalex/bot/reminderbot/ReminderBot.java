@@ -22,10 +22,11 @@ import java.util.List;
 public class ReminderBot extends TelegramWebhookBot {
 
     private final BotConfiguration botConfiguration;
+    private final ReminderFacade facade;
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return null;
+        return facade.perform(update);
     }
 
     @Override

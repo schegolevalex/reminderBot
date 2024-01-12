@@ -14,7 +14,7 @@ import java.util.Stack;
 public class AppConfiguration {
 
     @Bean
-    public Map<Long, Stack<AbstractReplier>> userStates() {
+    public Map<Long, Stack<AbstractReplier>> userStatesMap() {
         return new HashMap<>();
     }
 

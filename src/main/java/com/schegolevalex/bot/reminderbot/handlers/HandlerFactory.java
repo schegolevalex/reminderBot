@@ -1,7 +1,7 @@
 package com.schegolevalex.bot.reminderbot.handlers;
 
 import com.schegolevalex.bot.reminderbot.repliers.AbstractReplier;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -9,14 +9,10 @@ import java.util.Map;
 import java.util.Stack;
 
 @Component
+@RequiredArgsConstructor
 public class HandlerFactory {
 
     private final Map<String, Handler> handlerMap;
-
-    @Autowired
-    public HandlerFactory(Map<String, Handler> handlerMap) {
-        this.handlerMap = handlerMap;
-    }
 
     public void handle(Update update, Stack<AbstractReplier> replierStack) {
 

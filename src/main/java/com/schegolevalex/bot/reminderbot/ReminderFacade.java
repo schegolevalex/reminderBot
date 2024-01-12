@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
@@ -24,13 +25,12 @@ public class ReminderFacade {
     @Getter
     private final Map<String, Integer> messageIds = new HashMap<>();
 
-    public void perform(Update update) {
+    public BotApiMethod<?> perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         Stack<AbstractReplier> replierStack = getCurrentStateStack(chatId);
 
-        handlerFactory.handle(update, replierStack);
-        System.out.println(replierStack.peek());
-        replierStack.peek().reply(chatId, messageIds);
+//        handlerFactory.handle(update, replierStack);
+        return replierStack.peek().reply(chatId, messageIds);
     }
 
     private Stack<AbstractReplier> getCurrentStateStack(Long chatId) {

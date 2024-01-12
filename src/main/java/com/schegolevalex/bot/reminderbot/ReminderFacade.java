@@ -1,8 +1,8 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
-import com.schegolevalex.bot.reminderbot.repliers.AwaitStartReplier;
 import com.schegolevalex.bot.reminderbot.repliers.AbstractReplier;
+import com.schegolevalex.bot.reminderbot.repliers.AwaitStartReplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;

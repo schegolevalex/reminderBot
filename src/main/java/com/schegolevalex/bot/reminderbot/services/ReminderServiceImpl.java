@@ -3,7 +3,8 @@ package com.schegolevalex.bot.reminderbot.services;
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.repositories.ReminderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -11,28 +12,18 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReminderServiceImpl implements ReminderService {
 
     private final TelegramWebhookBot bot;
     private final ReminderRepository reminderRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
-
-
-    @Autowired
-    public ReminderServiceImpl(TelegramWebhookBot bot,
-                               ReminderRepository reminderRepository,
-                               ThreadPoolTaskScheduler taskScheduler) {
-        this.bot = bot;
-        this.reminderRepository = reminderRepository;
-        this.taskScheduler = taskScheduler;
-    }
 
     @Override
     public List<Reminder> getAllReminders() {

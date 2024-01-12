@@ -1,11 +1,9 @@
-package com.schegolevalex.bot.reminderbot.states;
+package com.schegolevalex.bot.reminderbot.repliers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -17,18 +15,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class WatchRemindersState extends UserState {
+public class DeleteReminderReplier extends AbstractReplier {
     private final ReminderService reminderService;
 
-    @Autowired
-    public WatchRemindersState(TelegramWebhookBot bot, ReminderService reminderService) {
+    public DeleteReminderReplier(TelegramWebhookBot bot, ReminderService reminderService) {
         super(bot);
         this.reminderService = reminderService;
     }
 
-    @SneakyThrows
     @Override
-    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
+    public void reply(Long chatId, Map<String, Integer> messageIds) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
 
@@ -59,6 +55,6 @@ public class WatchRemindersState extends UserState {
         }
         editMessageText.setText(String.valueOf(text));
         editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
-        bot.execute(editMessageText);
+        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
     }
 }

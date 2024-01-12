@@ -1,7 +1,7 @@
 package com.schegolevalex.bot.reminderbot.configs;
 
 import com.schegolevalex.bot.reminderbot.entities.Reminder;
-import com.schegolevalex.bot.reminderbot.states.UserState;
+import com.schegolevalex.bot.reminderbot.repliers.AbstractReplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -13,7 +13,7 @@ import java.util.Stack;
 public class AppConfiguration {
 
     @Bean
-    public Map<Long, Stack<UserState>> userStates() {
+    public Map<Long, Stack<AbstractReplier>> userStates() {
         return new HashMap<>();
     }
 

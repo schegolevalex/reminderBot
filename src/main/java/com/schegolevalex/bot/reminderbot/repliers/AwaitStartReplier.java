@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.states;
+package com.schegolevalex.bot.reminderbot.repliers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import lombok.SneakyThrows;
@@ -9,15 +9,15 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.util.Map;
 
 @Component
-public class AwaitStartState extends UserState {
+public class AwaitStartReplier extends AbstractReplier {
 
-    public AwaitStartState(TelegramWebhookBot bot) {
+    public AwaitStartReplier(TelegramWebhookBot bot) {
         super(bot);
     }
 
     @SneakyThrows
     @Override
-    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
+    public void reply(Long chatId, Map<String, Integer> messageIds) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(Constant.AWAIT_START_DESCRIPTION);

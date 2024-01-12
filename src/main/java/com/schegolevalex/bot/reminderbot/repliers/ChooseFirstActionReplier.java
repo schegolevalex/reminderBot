@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.states;
+package com.schegolevalex.bot.reminderbot.repliers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
@@ -11,15 +11,15 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import java.util.Map;
 
 @Component
-public class ChooseFirstActionState extends UserState {
+public class ChooseFirstActionReplier extends AbstractReplier {
 
-    public ChooseFirstActionState(TelegramWebhookBot bot) {
+    public ChooseFirstActionReplier(TelegramWebhookBot bot) {
         super(bot);
     }
 
     @SneakyThrows
     @Override
-    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
+    public void reply(Long chatId, Map<String, Integer> messageIds) {
         if (messageIds.get(String.valueOf(chatId)) == null) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(String.valueOf(chatId));
@@ -31,6 +31,7 @@ public class ChooseFirstActionState extends UserState {
             editMessageText.setChatId(String.valueOf(chatId));
             editMessageText.setText(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
             editMessageText.setReplyMarkup(KeyboardFactory.withFirstActionMessage());
+            editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
             bot.execute(editMessageText);
         }
     }

@@ -1,6 +1,7 @@
-package com.schegolevalex.bot.reminderbot.states;
+package com.schegolevalex.bot.reminderbot.repliers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
+import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -9,18 +10,20 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import java.util.Map;
 
 @Component
-public class WrongInputDateState extends UserState {
+public class AddReminderTextReplier extends AbstractReplier {
 
-    public WrongInputDateState(TelegramWebhookBot bot) {
+    public AddReminderTextReplier(TelegramWebhookBot bot) {
         super(bot);
     }
 
     @SneakyThrows
     @Override
-    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
+    public void reply(Long chatId, Map<String, Integer> messageIds) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
-        editMessageText.setText(Constant.WRONG_DATE_FORMAT);
+        editMessageText.setText(Constant.ADD_REMINDER_TEXT_DESCRIPTION);
+        editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
+        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
         bot.execute(editMessageText);
     }
 }

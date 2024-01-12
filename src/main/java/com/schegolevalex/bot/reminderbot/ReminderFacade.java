@@ -1,8 +1,8 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.handlers.HandlerFactory;
-import com.schegolevalex.bot.reminderbot.states.AwaitStartState;
-import com.schegolevalex.bot.reminderbot.states.UserState;
+import com.schegolevalex.bot.reminderbot.repliers.AwaitStartReplier;
+import com.schegolevalex.bot.reminderbot.repliers.AbstractReplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -15,28 +15,31 @@ import java.util.Stack;
 @Component
 public class ReminderFacade {
 
-    private final Map<Long, Stack<UserState>> userStatesMap;
-    private final AwaitStartState awaitStartState;
+    private final Map<Long, Stack<AbstractReplier>> userStatesMap;
+    private final AwaitStartReplier awaitStartReplier;
     private final HandlerFactory handlerFactory;
 
     private final Map<String, Integer> messageIds;
 
     @Autowired
-    public ReminderFacade(Map<Long, Stack<UserState>> userStatesMap,
-                          AwaitStartState awaitStartState,
+    public ReminderFacade(Map<Long, Stack<AbstractReplier>> userStatesMap,
+                          AwaitStartReplier awaitStartReplier,
                           HandlerFactory handlerFactory) {
         this.userStatesMap = userStatesMap;
-        this.awaitStartState = awaitStartState;
+        this.awaitStartReplier = awaitStartReplier;
         this.handlerFactory = handlerFactory;
         messageIds = new HashMap<>();
     }
 
     public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        Stack<UserState> userStateStack = getCurrentStateStack(chatId);
+        Stack<AbstractReplier> replierStack = getCurrentStateStack(chatId);
 
-        handlerFactory.handle(update, userStateStack);
-        userStateStack.peek().sendReply(chatId, messageIds);
+        handlerFactory.handle(update, replierStack);
+        System.out.println("*************");
+        System.out.println(replierStack.peek());
+        System.out.println("*************");
+        replierStack.peek().reply(chatId, messageIds);
 
 //        if (botApiMethod instanceof EditMessageText) {
 //            ((EditMessageText) botApiMethod).setMessageId(messageIds.get(String.valueOf(chatId)));
@@ -45,16 +48,16 @@ public class ReminderFacade {
     }
 
 
-    public Stack<UserState> getCurrentStateStack(Long chatId) {
-        Stack<UserState> userStateStack;
+    public Stack<AbstractReplier> getCurrentStateStack(Long chatId) {
+        Stack<AbstractReplier> replierStack;
 
         if (userStatesMap.get(chatId) == null || userStatesMap.get(chatId).empty()) {
-            userStateStack = new Stack<>();
-            userStateStack.push(awaitStartState);
-            userStatesMap.put(chatId, userStateStack);
-        } else userStateStack = userStatesMap.get(chatId);
+            replierStack = new Stack<>();
+            replierStack.push(awaitStartReplier);
+            userStatesMap.put(chatId, replierStack);
+        } else replierStack = userStatesMap.get(chatId);
 
-        return userStateStack;
+        return replierStack;
     }
 
     public void putToMessageIds(String chatId, Integer messageId) {

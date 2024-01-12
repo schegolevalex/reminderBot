@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.states;
+package com.schegolevalex.bot.reminderbot.repliers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import lombok.SneakyThrows;
@@ -9,18 +9,19 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import java.util.Map;
 
 @Component
-public class WrongInputCommonState extends UserState {
+public class WrongInputTimeReplier extends AbstractReplier {
 
-    public WrongInputCommonState(TelegramWebhookBot bot) {
+    public WrongInputTimeReplier(TelegramWebhookBot bot) {
         super(bot);
     }
 
     @SneakyThrows
     @Override
-    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
+    public void reply(Long chatId, Map<String, Integer> messageIds) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
-        editMessageText.setText(Constant.UNKNOWN_REQUEST);
+        editMessageText.setText(Constant.WRONG_TIME_FORMAT);
+        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
         bot.execute(editMessageText);
     }
 }

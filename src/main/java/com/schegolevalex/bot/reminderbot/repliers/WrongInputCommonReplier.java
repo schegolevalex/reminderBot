@@ -1,7 +1,6 @@
-package com.schegolevalex.bot.reminderbot.states;
+package com.schegolevalex.bot.reminderbot.repliers;
 
 import com.schegolevalex.bot.reminderbot.Constant;
-import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -10,19 +9,19 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import java.util.Map;
 
 @Component
-public class AddReminderTextState extends UserState {
+public class WrongInputCommonReplier extends AbstractReplier {
 
-    public AddReminderTextState(TelegramWebhookBot bot) {
+    public WrongInputCommonReplier(TelegramWebhookBot bot) {
         super(bot);
     }
 
     @SneakyThrows
     @Override
-    public void sendReply(Long chatId, Map<String, Integer> messageIds) {
+    public void reply(Long chatId, Map<String, Integer> messageIds) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
-        editMessageText.setText(Constant.ADD_REMINDER_TEXT_DESCRIPTION);
-        editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
+        editMessageText.setText(Constant.UNKNOWN_REQUEST);
+        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
         bot.execute(editMessageText);
     }
 }

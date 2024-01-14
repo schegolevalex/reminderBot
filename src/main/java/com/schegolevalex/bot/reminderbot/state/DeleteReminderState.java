@@ -1,15 +1,13 @@
 package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.ReminderBot;
-import com.schegolevalex.bot.reminderbot.handler.Handler;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.Map;
 
 @Component
 public class DeleteReminderState extends AbstractState {
@@ -17,11 +15,10 @@ public class DeleteReminderState extends AbstractState {
     private final WatchRemindersState watchRemindersState;
 
     @Autowired
-    public DeleteReminderState(Map<String, Handler> handlerMap,
-                               ReminderBot bot,
+    public DeleteReminderState(@Lazy ReminderBot bot,
                                ReminderService reminderService,
                                WatchRemindersState watchRemindersState) {
-        super(handlerMap, bot);
+        super(bot);
         this.reminderService = reminderService;
         this.watchRemindersState = watchRemindersState;
     }

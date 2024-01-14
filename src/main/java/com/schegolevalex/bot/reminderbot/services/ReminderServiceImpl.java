@@ -2,10 +2,10 @@ package com.schegolevalex.bot.reminderbot.services;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
-import com.schegolevalex.bot.reminderbot.repositories.ReminderRepository;
+import com.schegolevalex.bot.reminderbot.repository.ReminderRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -19,12 +19,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ReminderServiceImpl implements ReminderService {
 
     private final TelegramWebhookBot bot;
     private final ReminderRepository reminderRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
+
+    public ReminderServiceImpl(@Lazy TelegramWebhookBot bot,
+                               ReminderRepository reminderRepository,
+                               ThreadPoolTaskScheduler taskScheduler) {
+        this.bot = bot;
+        this.reminderRepository = reminderRepository;
+        this.taskScheduler = taskScheduler;
+    }
 
     @Override
     public List<Reminder> getAllReminders() {
@@ -48,7 +55,7 @@ public class ReminderServiceImpl implements ReminderService {
 
     @Override
     public List<Reminder> getAllRemindersById(Long chatId) {
-        return reminderRepository.findAllByChatID(chatId);
+        return reminderRepository.findAllByChatId(chatId);
     }
 
     @Override

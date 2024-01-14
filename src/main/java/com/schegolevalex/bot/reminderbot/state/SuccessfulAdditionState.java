@@ -1,18 +1,12 @@
 package com.schegolevalex.bot.reminderbot.state;
 
-import com.schegolevalex.bot.reminderbot.Constant;
-import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
-import com.schegolevalex.bot.reminderbot.handler.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 @Component
 public class SuccessfulAdditionState extends AbstractState {
@@ -20,10 +14,9 @@ public class SuccessfulAdditionState extends AbstractState {
     private final ChooseFirstActionState chooseFirstActionState;
 
     @Autowired
-    public SuccessfulAdditionState(Map<String, Handler> handlerMap,
-                                   ReminderBot bot,
+    public SuccessfulAdditionState(@Lazy ReminderBot bot,
                                    ChooseFirstActionState chooseFirstActionState) {
-        super(handlerMap, bot);
+        super(bot);
         this.chooseFirstActionState = chooseFirstActionState;
     }
 

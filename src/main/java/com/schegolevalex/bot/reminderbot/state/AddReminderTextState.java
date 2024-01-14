@@ -4,16 +4,14 @@ import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
-import com.schegolevalex.bot.reminderbot.handler.Handler;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.Map;
 
 @Component
 public class AddReminderTextState extends AbstractState {
@@ -21,9 +19,8 @@ public class AddReminderTextState extends AbstractState {
     private final AddReminderDateState addReminderDateState;
 
     @Autowired
-    public AddReminderTextState(Map<String, Handler> handlerMap,
-                                ReminderBot bot, AddReminderDateState addReminderDateState) {
-        super(handlerMap, bot);
+    public AddReminderTextState(@Lazy ReminderBot bot, AddReminderDateState addReminderDateState) {
+        super(bot);
         this.addReminderDateState = addReminderDateState;
     }
 

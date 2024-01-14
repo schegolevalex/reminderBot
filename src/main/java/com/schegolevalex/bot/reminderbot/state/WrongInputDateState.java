@@ -1,30 +1,34 @@
 package com.schegolevalex.bot.reminderbot.state;
 
-import com.schegolevalex.bot.reminderbot.Constant;
+import com.schegolevalex.bot.reminderbot.ReminderBot;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.Map;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class WrongInputDateState extends AbstractState {
 
-    public WrongInputDateState(TelegramWebhookBot bot) {
+    public WrongInputDateState(@Lazy ReminderBot bot) {
         super(bot);
     }
 
     @Override
-    public void reply(Long chatId, Map<String, Integer> messageIds) {
-        EditMessageText editMessageText = new EditMessageText();
-        editMessageText.setChatId(String.valueOf(chatId));
-        editMessageText.setText(Constant.WRONG_DATE_FORMAT);
-        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
-        try {
-            bot.execute(editMessageText);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+    public void handle(Update update) {
+
+    }
+
+    @Override
+    public BotApiMethod<?> reply(Update update) {
+        return null;
+//        EditMessageText editMessageText = new EditMessageText();
+//        editMessageText.setChatId(String.valueOf(chatId));
+//        editMessageText.setText(Constant.WRONG_DATE_FORMAT);
+//        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
+//        try {
+//            bot.execute(editMessageText);
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
     }
 }

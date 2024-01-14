@@ -2,15 +2,13 @@ package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
-import com.schegolevalex.bot.reminderbot.handler.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.Map;
 
 @Component
 public class AwaitStartState extends AbstractState {
@@ -18,11 +16,10 @@ public class AwaitStartState extends AbstractState {
     private final WrongInputCommonState wrongInputCommonState;
 
     @Autowired
-    public AwaitStartState(Map<String, Handler> handlerMap,
-                           ReminderBot bot,
+    public AwaitStartState(@Lazy ReminderBot bot,
                            ChooseFirstActionState chooseFirstActionState,
                            WrongInputCommonState wrongInputCommonState) {
-        super(handlerMap, bot);
+        super(bot);
         this.chooseFirstActionState = chooseFirstActionState;
         this.wrongInputCommonState = wrongInputCommonState;
     }

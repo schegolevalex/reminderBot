@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.repositories;
+package com.schegolevalex.bot.reminderbot.repository;
 
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ReminderRepository extends JpaRepository<Reminder, Long> {
-    List<Reminder> findAllByChatID(Long chatId);
+    List<Reminder> findAllByChatId(Long chatId);
 }

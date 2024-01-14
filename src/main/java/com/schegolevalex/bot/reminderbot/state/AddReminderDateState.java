@@ -4,8 +4,8 @@ import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
-import com.schegolevalex.bot.reminderbot.handler.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Map;
 
 @Component
 public class AddReminderDateState extends AbstractState {
@@ -24,11 +23,10 @@ public class AddReminderDateState extends AbstractState {
     private final WrongInputDateState wrongInputDateState;
 
     @Autowired
-    public AddReminderDateState(Map<String, Handler> handlerMap,
-                                ReminderBot bot,
+    public AddReminderDateState(@Lazy ReminderBot bot,
                                 AddReminderTimeState addReminderDateState,
                                 WrongInputDateState wrongInputDateState) {
-        super(handlerMap, bot);
+        super(bot);
         this.addReminderTimeState = addReminderDateState;
         this.wrongInputDateState = wrongInputDateState;
     }

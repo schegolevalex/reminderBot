@@ -1,8 +1,9 @@
-package com.schegolevalex.bot.reminderbot.handlers;
+package com.schegolevalex.bot.reminderbot.handler;
 
-import com.schegolevalex.bot.reminderbot.entities.Reminder;
-import com.schegolevalex.bot.reminderbot.repliers.AbstractReplier;
+import com.schegolevalex.bot.reminderbot.ReminderBot;
+import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
+import com.schegolevalex.bot.reminderbot.state.AbstractState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -21,36 +22,36 @@ public class TextHandler extends Handler {
     private final ReminderService reminderService;
 
     @Autowired
-    protected TextHandler(Map<Long, Reminder> tempReminders,
-                          ReminderService reminderService) {
+    public TextHandler(Map<String, AbstractState> stateMap, Map<Long, Reminder> tempReminders, ReminderService reminderService) {
+        super(stateMap);
         this.tempReminders = tempReminders;
         this.reminderService = reminderService;
     }
 
     @Override
-    public void handle(Update update, Stack<AbstractReplier> replierStack) {
-        String stateSimpleName = replierStack.peek().getClass().getSimpleName();
+    public void handle(Update update, ReminderBot bot) {
+        String stateSimpleName = stateStack.peek().getClass().getSimpleName();
 
         switch (stateSimpleName) {
-            case "AddReminderTextReplier" -> handleMessage(update, replierStack);
-            case "AddReminderDateReplier" -> handleDate(update, replierStack);
-            case "AddReminderTimeReplier" -> handleTime(update, replierStack);
-            default -> replierStack.push(replierMap.get("wrongInputReplier"));
+            case "AddReminderTextReplier" -> handleMessage(update, stateStack);
+            case "AddReminderDateReplier" -> handleDate(update, stateStack);
+            case "AddReminderTimeReplier" -> handleTime(update, stateStack);
+            default -> stateStack.push(replierMap.get("wrongInputReplier"));
         }
 //        reminderBot.deleteMessage(update);
     }
 
-    private void handleMessage(Update update, Stack<AbstractReplier> replierStack) {
+    private void handleMessage(Update update, Stack<AbstractState> stateStack) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = new Reminder();
-        tempReminder.setChatID(chatId);
+        tempReminder.setChatId(chatId);
         tempReminder.setText(update.getMessage().getText());
         tempReminders.put(chatId, tempReminder);
-        replierStack.push(replierMap.get("addReminderDateReplier"));
+        stateStack.push(replierMap.get("addReminderDateReplier"));
     }
 
-    private void handleDate(Update update, Stack<AbstractReplier> replierStack) {
+    private void handleDate(Update update, Stack<AbstractState> stateStack) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = tempReminders.get(chatId);
@@ -59,14 +60,14 @@ public class TextHandler extends Handler {
         try {
             date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         } catch (DateTimeParseException e) {
-            replierStack.push(replierMap.get("wrongInputDateReplier"));
+            stateStack.push(replierMap.get("wrongInputDateReplier"));
             return;
         }
         tempReminder.setDate(date);
-        replierStack.push(replierMap.get("addReminderTimeReplier"));
+        stateStack.push(replierMap.get("addReminderTimeReplier"));
     }
 
-    private void handleTime(Update update, Stack<AbstractReplier> replierStack) {
+    private void handleTime(Update update, Stack<AbstractState> stateStack) {
         Long chatId = AbilityUtils.getChatId(update);
 
         Reminder tempReminder = tempReminders.get(chatId);
@@ -75,13 +76,13 @@ public class TextHandler extends Handler {
         try {
             time = LocalTime.parse(text);
         } catch (DateTimeParseException e) {
-            replierStack.push(replierMap.get("wrongInputTimeReplier"));
+            stateStack.push(replierMap.get("wrongInputTimeReplier"));
             return;
         }
         tempReminder.setTime(time);
 
         reminderService.saveReminder(tempReminder);
         reminderService.sendReminder(tempReminder);
-        replierStack.push(replierMap.get("successfulAdditionReplier"));
+        stateStack.push(replierMap.get("successfulAdditionReplier"));
     }
 }

@@ -1,6 +1,6 @@
 package com.schegolevalex.bot.reminderbot.services;
 
-import com.schegolevalex.bot.reminderbot.entities.Reminder;
+import com.schegolevalex.bot.reminderbot.entity.Reminder;
 
 import java.util.List;
 import java.util.Optional;

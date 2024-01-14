@@ -1,39 +1,44 @@
-package com.schegolevalex.bot.reminderbot.repliers;
+package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
-import com.schegolevalex.bot.reminderbot.entities.Reminder;
+import com.schegolevalex.bot.reminderbot.ReminderBot;
+import com.schegolevalex.bot.reminderbot.entity.Reminder;
+import com.schegolevalex.bot.reminderbot.handler.Handler;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
-public class WatchRemindersReplier extends AbstractReplier {
+public class WatchRemindersState extends AbstractState {
     private final ReminderService reminderService;
 
     @Autowired
-    public WatchRemindersReplier(TelegramWebhookBot bot, ReminderService reminderService) {
-        super(bot);
+    public WatchRemindersState(Map<String, Handler> handlerMap,
+                               ReminderBot bot,
+                               ReminderService reminderService) {
+        super(handlerMap, bot);
         this.reminderService = reminderService;
     }
 
+
     @SneakyThrows
     @Override
-    public void reply(Long chatId, Map<String, Integer> messageIds) {
+    public BotApiMethod<?> reply(Long chatId, Update update) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(String.valueOf(chatId));
 
         List<Reminder> reminders = reminderService.getAllRemindersById(chatId);
-        reminders = reminders.stream().sorted().collect(Collectors.toList());
+        reminders = reminders.stream().sorted().toList();
 
         StringBuilder text = new StringBuilder(Constant.MY_REMINDERS);
 
@@ -60,6 +65,6 @@ public class WatchRemindersReplier extends AbstractReplier {
         editMessageText.setText(String.valueOf(text));
         editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
         editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
-        bot.execute(editMessageText);
+        return editMessageText;
     }
 }

@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.entities;
+package com.schegolevalex.bot.reminderbot.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,10 +21,10 @@ public class Reminder implements Comparable<Reminder> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reminder_id", nullable = false)
-    long reminderID;
+    long reminderId;
 
     @Column(name = "chat_id", nullable = false)
-    long chatID;
+    long chatId;
 
     @Column(name = "reminder_text", nullable = false)
     String text;
@@ -35,8 +35,8 @@ public class Reminder implements Comparable<Reminder> {
     @Column(name = "reminder_time", nullable = false)
     LocalTime time;
 
-    public Reminder(long chatID, String text, LocalDate date, LocalTime time) {
-        this.chatID = chatID;
+    public Reminder(long chatId, String text, LocalDate date, LocalTime time) {
+        this.chatId = chatId;
         this.text = text;
         this.date = date;
         this.time = time;
@@ -45,8 +45,8 @@ public class Reminder implements Comparable<Reminder> {
     @Override
     public String toString() {
         return "Reminder{" +
-                "reminderID=" + reminderID +
-                ", chatID=" + chatID +
+                "reminderId=" + reminderId +
+                ", chatId=" + chatId +
                 ", text='" + text + '\'' +
                 ", date=" + date +
                 ", time=" + time +

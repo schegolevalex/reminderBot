@@ -1,7 +1,7 @@
 package com.schegolevalex.bot.reminderbot.services;
 
 import com.schegolevalex.bot.reminderbot.Constant;
-import com.schegolevalex.bot.reminderbot.entities.Reminder;
+import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import com.schegolevalex.bot.reminderbot.repositories.ReminderRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +60,7 @@ public class ReminderServiceImpl implements ReminderService {
             Date date = Date.from(reminderDateTime.toInstant(ZoneOffset.of("+3")));
 
             SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(reminder.getChatID()));
+            message.setChatId(String.valueOf(reminder.getChatId()));
             message.setText(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()));
 
             taskScheduler.schedule(() -> executeMethod(message), date);

@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.configs;
+package com.schegolevalex.bot.reminderbot.config;
 
 import lombok.AccessLevel;
 import lombok.Getter;

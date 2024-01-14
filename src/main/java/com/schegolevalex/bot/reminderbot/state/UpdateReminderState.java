@@ -1,12 +1,12 @@
-package com.schegolevalex.bot.reminderbot.repliers;
+package com.schegolevalex.bot.reminderbot.state;
 
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
 import java.util.Map;
 
-public class UpdateReminderReplier extends AbstractReplier {
+public class UpdateReminderState extends AbstractState {
 
-    public UpdateReminderReplier(TelegramWebhookBot bot) {
+    public UpdateReminderState(TelegramWebhookBot bot) {
         super(bot);
     }
 

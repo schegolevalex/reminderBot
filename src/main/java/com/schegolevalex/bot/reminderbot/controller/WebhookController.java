@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.controllers;
+package com.schegolevalex.bot.reminderbot.controller;
 
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import lombok.RequiredArgsConstructor;

@@ -1,22 +1,20 @@
-package com.schegolevalex.bot.reminderbot.configs;
+package com.schegolevalex.bot.reminderbot.config;
 
-import com.schegolevalex.bot.reminderbot.entities.Reminder;
-import com.schegolevalex.bot.reminderbot.repliers.AbstractReplier;
+import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 @Configuration
 public class AppConfiguration {
 
-    @Bean
-    public Map<Long, Stack<AbstractReplier>> userStatesMap() {
-        return new HashMap<>();
-    }
+//    @Bean
+//    public Map<Long, Stack<AbstractReplier>> userStatesMap() {
+//        return new HashMap<>();
+//    }
 
     @Bean
     public Map<Long, Reminder> tempReminders() {

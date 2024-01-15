@@ -3,35 +3,19 @@ package com.schegolevalex.bot.reminderbot.state;
 import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class ChooseFirstActionState extends AbstractState {
-    private final WatchRemindersState watchRemindersState;
-    private final AddReminderTextState addReminderTextState;
-    private final UpdateReminderState updateReminderState;
-    private final DeleteReminderState deleteReminderState;
-    private final WrongInputCommonState wrongInputCommonState;
 
-    @Autowired
-    public ChooseFirstActionState(@Lazy ReminderBot bot,
-                                  WatchRemindersState watchRemindersState,
-                                  AddReminderTextState addReminderTextState,
-                                  UpdateReminderState updateReminderState,
-                                  DeleteReminderState deleteReminderState,
-                                  WrongInputCommonState wrongInputCommonState) {
+    public ChooseFirstActionState(@Lazy ReminderBot bot) {
         super(bot);
-        this.watchRemindersState = watchRemindersState;
-        this.addReminderTextState = addReminderTextState;
-        this.updateReminderState = updateReminderState;
-        this.deleteReminderState = deleteReminderState;
-        this.wrongInputCommonState = wrongInputCommonState;
     }
 
     @Override
@@ -39,25 +23,34 @@ public class ChooseFirstActionState extends AbstractState {
         Long chatId = AbilityUtils.getChatId(update);
         try {
             switch (update.getCallbackQuery().getData()) {
-                case (Constant.GO_TO_MY_REMINDERS) -> getBot().pushBotState(chatId, watchRemindersState);
-                case (Constant.GO_TO_ADD_REMINDER) -> getBot().pushBotState(chatId, addReminderTextState);
-                case (Constant.GO_TO_UPDATE_REMINDER) -> getBot().pushBotState(chatId, updateReminderState);
-                case (Constant.GO_TO_DELETE_REMINDER) -> getBot().pushBotState(chatId, deleteReminderState);
+                case (Constant.GO_TO_MY_REMINDERS) ->
+                        getBot().pushBotState(chatId, getBot().findStateByType(State.WATCH_REMINDERS));
+                case (Constant.GO_TO_ADD_REMINDER) ->
+                        getBot().pushBotState(chatId, getBot().findStateByType(State.ADD_REMINDER_TEXT));
+                case (Constant.GO_TO_UPDATE_REMINDER) ->
+                        getBot().pushBotState(chatId, getBot().findStateByType(State.UPDATE_REMINDER));
+                case (Constant.GO_TO_DELETE_REMINDER) ->
+                        getBot().pushBotState(chatId, getBot().findStateByType(State.DELETE_REMINDER));
                 case (Constant.GO_BACK) -> getBot().popBotState(chatId);
-                default -> getBot().pushBotState(chatId, wrongInputCommonState);
+                default -> getBot().pushBotState(chatId, getBot().findStateByType(State.WRONG_INPUT_COMMON));
             }
         } catch (Exception e) {
-            getBot().pushBotState(chatId, wrongInputCommonState);
+            getBot().pushBotState(chatId, getBot().findStateByType(State.WRONG_INPUT_COMMON));
         }
     }
 
     @Override
     public BotApiMethod<?> reply(Update update) {
-        return EditMessageText.builder()
+        return SendMessage.builder()
                 .chatId(AbilityUtils.getChatId(update))
-                .messageId(update.getMessage().getMessageId())
+//                .messageId(update.getMessage().getMessageId())
                 .text(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION)
                 .replyMarkup(KeyboardFactory.withFirstActionMessage())
                 .build();
+    }
+
+    @Override
+    public State getType() {
+        return State.CHOOSE_FIRST_ACTION;
     }
 }

@@ -5,7 +5,6 @@ import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -20,18 +19,11 @@ import java.time.format.DateTimeParseException;
 @Component
 public class AddReminderTimeState extends AbstractState {
     private final ReminderService reminderService;
-    private final WrongInputTimeState wrongInputTimeState;
-    private final SuccessfulAdditionState successfulAdditionState;
 
-    @Autowired
     public AddReminderTimeState(@Lazy ReminderBot bot,
-                                ReminderService reminderService,
-                                WrongInputTimeState wrongInputTimeState,
-                                SuccessfulAdditionState successfulAdditionState) {
+                                ReminderService reminderService) {
         super(bot);
         this.reminderService = reminderService;
-        this.wrongInputTimeState = wrongInputTimeState;
-        this.successfulAdditionState = successfulAdditionState;
     }
 
     @Override
@@ -44,14 +36,14 @@ public class AddReminderTimeState extends AbstractState {
         try {
             time = LocalTime.parse(text);
         } catch (DateTimeParseException e) {
-            getBot().pushBotState(chatId, wrongInputTimeState);
+            getBot().pushBotState(chatId, getBot().findStateByType(State.WRONG_INPUT_TIME));
             return;
         }
         tempReminder.setTime(time);
 
         reminderService.saveReminder(tempReminder);
         reminderService.sendReminder(tempReminder);
-        getBot().pushBotState(chatId, successfulAdditionState);
+        getBot().pushBotState(chatId, getBot().findStateByType(State.SUCCESSFUL_ADDITION));
     }
 
     @Override
@@ -65,5 +57,10 @@ public class AddReminderTimeState extends AbstractState {
                         Constant.ADD_REMINDER_TIME_DESCRIPTION)
                 .replyMarkup(KeyboardFactory.withBackButton())
                 .build();
+    }
+
+    @Override
+    public State getType() {
+        return State.ADD_REMINDER_TIME;
     }
 }

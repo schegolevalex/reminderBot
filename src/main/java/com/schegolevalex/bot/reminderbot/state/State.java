@@ -1,0 +1,16 @@
+package com.schegolevalex.bot.reminderbot.state;
+
+public enum State {
+    ADD_REMINDER_DATE,
+    ADD_REMINDER_TEXT,
+    ADD_REMINDER_TIME,
+    AWAIT_START,
+    CHOOSE_FIRST_ACTION,
+    DELETE_REMINDER,
+    SUCCESSFUL_ADDITION,
+    UPDATE_REMINDER,
+    WATCH_REMINDERS,
+    WRONG_INPUT_COMMON,
+    WRONG_INPUT_DATE,
+    WRONG_INPUT_TIME
+}

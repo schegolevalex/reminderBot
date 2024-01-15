@@ -31,4 +31,9 @@ public class WrongInputDateState extends AbstractState {
 //            e.printStackTrace();
 //        }
     }
+
+    @Override
+    public State getType() {
+        return State.WRONG_INPUT_DATE;
+    }
 }

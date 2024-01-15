@@ -4,6 +4,7 @@ import com.schegolevalex.bot.reminderbot.config.BotConfiguration;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import com.schegolevalex.bot.reminderbot.state.AbstractState;
 import com.schegolevalex.bot.reminderbot.state.AwaitStartState;
+import com.schegolevalex.bot.reminderbot.state.State;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +30,18 @@ public class ReminderBot extends TelegramWebhookBot {
 
     private final BotConfiguration botConfiguration;
     private final Map<Long, Stack<AbstractState>> userStatesMap = new HashMap<>();
-    private final AwaitStartState awaitStartState;
+    private final List<AbstractState> allPossiblesStates;
+    //    private final AwaitStartState awaitStartState;
     @Getter
     private final Map<Long, Reminder> tempReminders = new HashMap<>();
 
+    @SneakyThrows
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         getBotState(chatId).handle(update);
-        return getBotState(chatId).reply(update);
+        execute(getBotState(chatId).reply(update));
+        return null;
     }
 
     private Stack<AbstractState> getBotStateStack(Long chatId) {
@@ -45,7 +49,7 @@ public class ReminderBot extends TelegramWebhookBot {
 
         if (userStatesMap.get(chatId) == null || userStatesMap.get(chatId).empty()) {
             stateStack = new Stack<>();
-            stateStack.push(awaitStartState);
+            stateStack.push(new AwaitStartState(this));
             userStatesMap.put(chatId, stateStack);
         } else stateStack = userStatesMap.get(chatId);
 
@@ -64,18 +68,25 @@ public class ReminderBot extends TelegramWebhookBot {
         getBotStateStack(chatId).pop();
     }
 
-    @SneakyThrows
-    public void sendMessage(long chatId, String textMessage) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(textMessage);
-        execute(sendMessage);
+    public AbstractState findStateByType(State stateType) {
+        return this.allPossiblesStates.stream()
+                .filter(state -> state.getType() == stateType)
+                .findAny()
+                .orElseThrow(RuntimeException::new);
     }
 
-    @SneakyThrows
-    public void sendMessage(SendMessage sendMessage) {
-        execute(sendMessage);
-    }
+//    @SneakyThrows
+//    public void sendMessage(long chatId, String textMessage) {
+//        SendMessage sendMessage = new SendMessage();
+//        sendMessage.setChatId(chatId);
+//        sendMessage.setText(textMessage);
+//        execute(sendMessage);
+//    }
+
+//    @SneakyThrows
+//    public void sendMessage(BotApiMethod<?> sendMessage) {
+//        execute(sendMessage);
+//    }
 
     @Override
     public String getBotUsername() {

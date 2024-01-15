@@ -22,4 +22,9 @@ public class UpdateReminderState extends AbstractState {
     public BotApiMethod<?> reply(Update update) {
         return null;
     }
+
+    @Override
+    public State getType() {
+        return State.UPDATE_REMINDER;
+    }
 }

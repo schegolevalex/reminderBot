@@ -2,7 +2,6 @@ package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -12,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class WatchRemindersState extends AbstractState {
     private final ReminderService reminderService;
 
-    @Autowired
     public WatchRemindersState(@Lazy ReminderBot bot,
                                ReminderService reminderService) {
         super(bot);
@@ -59,5 +57,10 @@ public class WatchRemindersState extends AbstractState {
 //        editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
 //        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
 //        return editMessageText;
+    }
+
+    @Override
+    public State getType() {
+        return State.WATCH_REMINDERS;
     }
 }

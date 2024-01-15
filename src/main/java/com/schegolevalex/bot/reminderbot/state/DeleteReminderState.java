@@ -2,7 +2,6 @@ package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.services.ReminderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -12,23 +11,18 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class DeleteReminderState extends AbstractState {
     private final ReminderService reminderService;
-    private final WatchRemindersState watchRemindersState;
 
-    @Autowired
     public DeleteReminderState(@Lazy ReminderBot bot,
-                               ReminderService reminderService,
-                               WatchRemindersState watchRemindersState) {
+                               ReminderService reminderService) {
         super(bot);
         this.reminderService = reminderService;
-        this.watchRemindersState = watchRemindersState;
     }
-
 
     @Override
     public void handle(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         reminderService.deleteReminder(chatId);
-        getBot().pushBotState(chatId, watchRemindersState);
+        getBot().pushBotState(chatId, getBot().findStateByType(State.CHOOSE_FIRST_ACTION));
     }
 
     @Override
@@ -66,5 +60,10 @@ public class DeleteReminderState extends AbstractState {
 //        editMessageText.setText(String.valueOf(text));
 //        editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
 //        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
+    }
+
+    @Override
+    public State getType() {
+        return State.DELETE_REMINDER;
     }
 }

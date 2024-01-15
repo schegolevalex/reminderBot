@@ -4,7 +4,6 @@ import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -19,16 +18,8 @@ import java.time.format.DateTimeParseException;
 @Component
 public class AddReminderDateState extends AbstractState {
 
-    private final AddReminderTimeState addReminderTimeState;
-    private final WrongInputDateState wrongInputDateState;
-
-    @Autowired
-    public AddReminderDateState(@Lazy ReminderBot bot,
-                                AddReminderTimeState addReminderDateState,
-                                WrongInputDateState wrongInputDateState) {
+    public AddReminderDateState(@Lazy ReminderBot bot) {
         super(bot);
-        this.addReminderTimeState = addReminderDateState;
-        this.wrongInputDateState = wrongInputDateState;
     }
 
     @Override
@@ -41,11 +32,11 @@ public class AddReminderDateState extends AbstractState {
         try {
             date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         } catch (DateTimeParseException e) {
-            getBot().pushBotState(chatId, wrongInputDateState);
+            getBot().pushBotState(chatId, getBot().findStateByType(State.WRONG_INPUT_DATE));
             return;
         }
         tempReminder.setDate(date);
-        getBot().pushBotState(chatId, addReminderTimeState);
+        getBot().pushBotState(chatId, getBot().findStateByType(State.ADD_REMINDER_TIME));
     }
 
     @Override
@@ -57,5 +48,10 @@ public class AddReminderDateState extends AbstractState {
                         "\"\n" + Constant.ADD_REMINDER_DATE_DESCRIPTION)
                 .replyMarkup(KeyboardFactory.withBackButton())
                 .build();
+    }
+
+    @Override
+    public State getType() {
+        return State.ADD_REMINDER_DATE;
     }
 }

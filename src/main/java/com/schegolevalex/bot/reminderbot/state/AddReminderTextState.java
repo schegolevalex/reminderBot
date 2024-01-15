@@ -5,7 +5,6 @@ import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -16,12 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class AddReminderTextState extends AbstractState {
 
-    private final AddReminderDateState addReminderDateState;
-
-    @Autowired
-    public AddReminderTextState(@Lazy ReminderBot bot, AddReminderDateState addReminderDateState) {
+    public AddReminderTextState(@Lazy ReminderBot bot) {
         super(bot);
-        this.addReminderDateState = addReminderDateState;
     }
 
     @Override
@@ -32,10 +27,9 @@ public class AddReminderTextState extends AbstractState {
         tempReminder.setChatId(chatId);
         tempReminder.setText(update.getMessage().getText());
         getBot().getTempReminders().put(chatId, tempReminder);
-        getBot().pushBotState(chatId, addReminderDateState);
+        getBot().pushBotState(chatId, getBot().findStateByType(State.ADD_REMINDER_DATE));
     }
 
-    @SneakyThrows
     @Override
     public BotApiMethod<?> reply(Update update) {
         return EditMessageText.builder()
@@ -44,5 +38,10 @@ public class AddReminderTextState extends AbstractState {
                 .text(Constant.ADD_REMINDER_TEXT_DESCRIPTION)
                 .replyMarkup(KeyboardFactory.withBackButton())
                 .build();
+    }
+
+    @Override
+    public State getType() {
+        return State.ADD_REMINDER_TEXT;
     }
 }

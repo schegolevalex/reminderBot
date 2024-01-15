@@ -27,4 +27,9 @@ public class WrongInputTimeState extends AbstractState {
 //        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
 //        bot.execute(editMessageText);
     }
+
+    @Override
+    public State getType() {
+        return State.WRONG_INPUT_TIME;
+    }
 }

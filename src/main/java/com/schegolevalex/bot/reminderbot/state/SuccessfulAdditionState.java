@@ -1,7 +1,6 @@
 package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.ReminderBot;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -11,19 +10,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class SuccessfulAdditionState extends AbstractState {
 
-    private final ChooseFirstActionState chooseFirstActionState;
-
-    @Autowired
-    public SuccessfulAdditionState(@Lazy ReminderBot bot,
-                                   ChooseFirstActionState chooseFirstActionState) {
+    public SuccessfulAdditionState(@Lazy ReminderBot bot) {
         super(bot);
-        this.chooseFirstActionState = chooseFirstActionState;
     }
 
     @Override
     public void handle(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        getBot().pushBotState(chatId, chooseFirstActionState);
+        getBot().pushBotState(chatId, getBot().findStateByType(State.CHOOSE_FIRST_ACTION));
     }
 
     @Override
@@ -50,5 +44,10 @@ public class SuccessfulAdditionState extends AbstractState {
 //        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
 //
 //        bot.execute(editMessageText);
+    }
+
+    @Override
+    public State getType() {
+        return State.SUCCESSFUL_ADDITION;
     }
 }

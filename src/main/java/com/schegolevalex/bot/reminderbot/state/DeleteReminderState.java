@@ -19,13 +19,6 @@ public class DeleteReminderState extends AbstractState {
     }
 
     @Override
-    public void handle(Update update) {
-        Long chatId = AbilityUtils.getChatId(update);
-        reminderService.deleteReminder(chatId);
-        getBot().pushBotState(chatId, getBot().findStateByType(State.CHOOSE_FIRST_ACTION));
-    }
-
-    @Override
     public BotApiMethod<?> reply(Update update) {
         // todo
         return null;
@@ -60,6 +53,13 @@ public class DeleteReminderState extends AbstractState {
 //        editMessageText.setText(String.valueOf(text));
 //        editMessageText.setReplyMarkup(KeyboardFactory.withBackButton());
 //        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
+    }
+
+    @Override
+    public void perform(Update update) {
+        Long chatId = AbilityUtils.getChatId(update);
+//        reminderService.deleteReminder(XXX);
+        bot.pushBotState(chatId, State.CHOOSE_FIRST_ACTION);
     }
 
     @Override

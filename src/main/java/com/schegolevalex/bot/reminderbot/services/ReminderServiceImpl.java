@@ -1,37 +1,19 @@
 package com.schegolevalex.bot.reminderbot.services;
 
-import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import com.schegolevalex.bot.reminderbot.repository.ReminderRepository;
-import jakarta.annotation.PostConstruct;
-import lombok.SneakyThrows;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ReminderServiceImpl implements ReminderService {
 
-    private final TelegramWebhookBot bot;
     private final ReminderRepository reminderRepository;
-    private final ThreadPoolTaskScheduler taskScheduler;
-
-    public ReminderServiceImpl(@Lazy TelegramWebhookBot bot,
-                               ReminderRepository reminderRepository,
-                               ThreadPoolTaskScheduler taskScheduler) {
-        this.bot = bot;
-        this.reminderRepository = reminderRepository;
-        this.taskScheduler = taskScheduler;
-    }
 
     @Override
     public List<Reminder> getAllReminders() {
@@ -39,56 +21,22 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public void saveReminder(Reminder reminder) {
-        reminderRepository.save(reminder);
+    public Reminder saveReminder(Reminder reminder) {
+        return reminderRepository.save(reminder);
     }
 
     @Override
-    public Optional<Reminder> getReminder(long id) {
+    public Optional<Reminder> getReminderById(UUID id) {
         return reminderRepository.findById(id);
     }
 
     @Override
-    public void deleteReminder(long id) {
+    public void deleteReminder(UUID id) {
         reminderRepository.deleteById(id);
     }
 
     @Override
-    public List<Reminder> getAllRemindersById(Long chatId) {
+    public List<Reminder> getAllRemindersByChatId(Long chatId) {
         return reminderRepository.findAllByChatId(chatId);
-    }
-
-    @Override
-    public void sendReminder(Reminder reminder) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reminderDateTime = reminder.getDate().atTime(reminder.getTime());
-
-        if (now.isBefore(reminderDateTime)) {
-            Date date = Date.from(reminderDateTime.toInstant(ZoneOffset.of("+3")));
-
-            SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(reminder.getChatId()));
-            message.setText(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()));
-
-            taskScheduler.schedule(() -> executeMethod(message), date);
-        }
-    }
-
-    @SneakyThrows
-    private void executeMethod(BotApiMethod<?> method) {
-        int messageId;
-        if (method instanceof SendMessage) {
-            messageId = bot.execute((SendMessage) method).getMessageId();
-//                reminderFacade.putToMessageIds(((SendMessage) method).getChatId(), messageId);
-        } else {
-            bot.execute(method);
-        }
-    }
-
-    @PostConstruct
-    private void registerPreviousReminders() {
-        List<Reminder> allReminders = getAllReminders();
-        for (Reminder reminder : allReminders)
-            sendReminder(reminder);
     }
 }

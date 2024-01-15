@@ -12,14 +12,14 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
-public class WatchRemindersState extends AbstractState {
+public class EditReminderState extends AbstractState {
     private final ReminderService reminderService;
 
-    public WatchRemindersState(@Lazy ReminderBot bot,
-                               ReminderService reminderService) {
+    public EditReminderState(@Lazy ReminderBot bot, ReminderService reminderService) {
         super(bot);
         this.reminderService = reminderService;
     }
@@ -27,33 +27,34 @@ public class WatchRemindersState extends AbstractState {
     @Override
     public BotApiMethod<?> reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        List<Reminder> reminders = reminderService.getAllRemindersByChatId(chatId);
+
+        if (update.hasCallbackQuery()) {
+            String data = update.getCallbackQuery().getData();
+            String id = data.substring(data.length() - 36);
+            Optional<Reminder> mayBeReminder = reminderService.getReminderById(UUID.fromString(id));
+            if (mayBeReminder.isPresent()) {
+                Reminder reminder = mayBeReminder.get();
+                return SendMessage.builder()
+                        .chatId(chatId)
+                        .text(reminder.toUserView())
+                        .replyMarkup(KeyboardFactory.withReminderMessage())
+                        .build();
+            }
+        }
 
         return SendMessage.builder()
                 .chatId(chatId)
-                .text(Constant.MY_REMINDERS)
-                .replyMarkup(KeyboardFactory.withRemindersMessage(reminders))
-                .build();
-    }
+                .text(Constant.UNKNOWN_REMINDER)
+                .replyMarkup(KeyboardFactory.withBackButton())
+                .build();    }
 
     @Override
     public void perform(Update update) {
-        Long chatId = AbilityUtils.getChatId(update);
 
-        if (update.hasCallbackQuery()) {
-            if (update.getCallbackQuery().getData().startsWith(Constant.Callback.GO_TO_MY_REMINDER))
-                bot.pushBotState(chatId, State.WATCH_REMINDER);
-
-            switch (update.getCallbackQuery().getData()) {
-                case (Constant.Callback.GO_BACK) -> bot.popBotState(chatId);
-                // case2..caseN
-            }
-        } else
-            bot.pushBotState(chatId, State.WRONG_INPUT);
     }
 
     @Override
     public State getType() {
-        return State.WATCH_REMINDERS;
+        return State.EDIT_REMINDER;
     }
 }

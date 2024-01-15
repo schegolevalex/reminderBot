@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Entity
 @Table(name = "reminders")
@@ -19,9 +21,9 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Reminder implements Comparable<Reminder> {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reminder_id", nullable = false)
-    long reminderId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    UUID id;
 
     @Column(name = "chat_id", nullable = false)
     long chatId;
@@ -44,12 +46,12 @@ public class Reminder implements Comparable<Reminder> {
 
     @Override
     public String toString() {
-        return "Reminder{" +
-                "reminderId=" + reminderId +
-                ", chatId=" + chatId +
-                ", text='" + text + '\'' +
-                ", date=" + date +
-                ", time=" + time +
+        return "Reminder {" +
+                "reminderId = " + id +
+                ", chatId = " + chatId +
+                ", text = \"" + text + '\"' +
+                ", date = " + date +
+                ", time = " + time +
                 '}';
     }
 
@@ -58,5 +60,9 @@ public class Reminder implements Comparable<Reminder> {
         LocalDateTime thisReminderDateTime = this.getDate().atTime(this.getTime());
         LocalDateTime otherReminderDateTime = other.getDate().atTime(other.getTime());
         return thisReminderDateTime.compareTo(otherReminderDateTime);
+    }
+
+    public String toUserView() {
+        return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " " + time + " " + text;
     }
 }

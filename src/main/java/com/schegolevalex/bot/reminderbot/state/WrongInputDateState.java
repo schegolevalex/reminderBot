@@ -3,6 +3,7 @@ package com.schegolevalex.bot.reminderbot.state;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -11,11 +12,6 @@ public class WrongInputDateState extends AbstractState {
 
     public WrongInputDateState(@Lazy ReminderBot bot) {
         super(bot);
-    }
-
-    @Override
-    public void handle(Update update) {
-
     }
 
     @Override
@@ -30,6 +26,11 @@ public class WrongInputDateState extends AbstractState {
 //        } catch (TelegramApiException e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    @Override
+    public void perform(Update update) {
+        bot.pushBotState(AbilityUtils.getChatId(update), State.ADD_REMINDER_DATE);
     }
 
     @Override

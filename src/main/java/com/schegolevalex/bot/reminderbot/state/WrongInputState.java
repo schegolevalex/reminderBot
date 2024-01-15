@@ -1,6 +1,7 @@
 package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.Constant;
+import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -10,9 +11,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
-public class AwaitStartState extends AbstractState {
+public class WrongInputState extends AbstractState {
 
-    public AwaitStartState(@Lazy ReminderBot bot) {
+    public WrongInputState(@Lazy ReminderBot bot) {
         super(bot);
     }
 
@@ -20,7 +21,9 @@ public class AwaitStartState extends AbstractState {
     public BotApiMethod<?> reply(Update update) {
         return SendMessage.builder()
                 .chatId(AbilityUtils.getChatId(update))
-                .text(Constant.AWAIT_START_DESCRIPTION)
+//                .messageId(update.getMessage().getMessageId())
+                .text(Constant.UNKNOWN_REQUEST)
+                .replyMarkup(KeyboardFactory.withFirstActionMessage())
                 .build();
     }
 
@@ -28,9 +31,10 @@ public class AwaitStartState extends AbstractState {
     public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        if (update.hasMessage() && update.getMessage().hasText())
-            switch (update.getMessage().getText()) {
-                case ("/start") -> bot.pushBotState(chatId, State.CHOOSE_FIRST_ACTION);
+        if (update.hasCallbackQuery())
+            switch (update.getCallbackQuery().getData()) {
+                case (Constant.Callback.GO_TO_MY_REMINDERS) -> bot.pushBotState(chatId, State.WATCH_REMINDERS);
+                case (Constant.Callback.GO_TO_ADD_REMINDER) -> bot.pushBotState(chatId, State.ADD_REMINDER_TEXT);
             }
         else
             bot.pushBotState(chatId, State.WRONG_INPUT);
@@ -38,6 +42,6 @@ public class AwaitStartState extends AbstractState {
 
     @Override
     public State getType() {
-        return State.AWAIT_START;
+        return State.WRONG_INPUT;
     }
 }

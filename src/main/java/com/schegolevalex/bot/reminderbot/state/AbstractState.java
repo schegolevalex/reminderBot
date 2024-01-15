@@ -1,23 +1,22 @@
 package com.schegolevalex.bot.reminderbot.state;
 
 import com.schegolevalex.bot.reminderbot.ReminderBot;
-import lombok.Getter;
 import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-@Getter
+//@Getter
 public abstract class AbstractState {
 
-    private final ReminderBot bot;
+    final ReminderBot bot;
 
     public AbstractState(@Lazy ReminderBot bot) {
         this.bot = bot;
     }
 
-    public abstract void handle(Update update);
-
     public abstract BotApiMethod<?> reply(Update update);
+
+    public abstract void perform(Update update);
 
     public abstract State getType();
 }

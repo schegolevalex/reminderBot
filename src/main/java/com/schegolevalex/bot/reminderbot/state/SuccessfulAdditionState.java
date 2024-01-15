@@ -1,11 +1,17 @@
 package com.schegolevalex.bot.reminderbot.state;
 
+import com.schegolevalex.bot.reminderbot.Constant;
+import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
+import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class SuccessfulAdditionState extends AbstractState {
@@ -15,35 +21,27 @@ public class SuccessfulAdditionState extends AbstractState {
     }
 
     @Override
-    public void handle(Update update) {
+    public BotApiMethod<?> reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        getBot().pushBotState(chatId, getBot().findStateByType(State.CHOOSE_FIRST_ACTION));
+        Reminder reminder = bot.getTempReminders().get(chatId);
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text(String.format(Constant.SUCCESSFUL_ADDITION,
+                        reminder.getText(),
+                        reminder.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                        reminder.getTime().toString()))
+                .replyMarkup(KeyboardFactory.withMainPageButton())
+                .build();
     }
 
     @Override
-    public BotApiMethod<?> reply(Update update) {
-        return null;
-//        Long chatId = AbilityUtils.getChatId(update);
-//        return EditMessageText.builder()
-//                .chatId(chatId)
-//                .messageId(update.getMessage().getMessageId())
-//                .text("Текст: \"" + getBot().getTempReminders().get(chatId).getText() + "\"\n" +
-//                        "Дата: " + getBot().getTempReminders().get(chatId).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + "\"\n" +
-//                        Constant.ADD_REMINDER_TIME_DESCRIPTION)
-//                .replyMarkup(KeyboardFactory.withBackButton())
-//                .build();
-//
-//
-//        EditMessageText editMessageText = new EditMessageText();
-//        editMessageText.setText(String.format(Constant.SUCCESSFUL_ADDITION,
-//                tempReminders.get(chatId).getText(),
-//                tempReminders.get(chatId).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-//                tempReminders.get(chatId).getTime()) + "\n" + Constant.CHOOSE_FIRST_ACTION_DESCRIPTION);
-//
-//        editMessageText.setReplyMarkup(KeyboardFactory.withFirstActionMessage());
-//        editMessageText.setMessageId(messageIds.get(String.valueOf(chatId)));
-//
-//        bot.execute(editMessageText);
+    public void perform(Update update) {
+        Long chatId = AbilityUtils.getChatId(update);
+
+        if (update.hasCallbackQuery())
+            bot.pushBotState(chatId, State.CHOOSE_FIRST_ACTION);
+        else
+            bot.pushBotState(chatId, State.WRONG_INPUT);
     }
 
     @Override

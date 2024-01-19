@@ -41,7 +41,7 @@ public class AddReminderTextState extends AbstractState {
             Reminder tempReminder = new Reminder();
             tempReminder.setChatId(chatId);
             tempReminder.setText(update.getMessage().getText());
-            bot.getTempReminders().put(chatId, tempReminder);
+            bot.getRemindersContext().put(chatId, tempReminder);
             bot.pushBotState(chatId, State.ADD_REMINDER_DATE);
         } else
             bot.pushBotState(chatId, State.WRONG_INPUT);

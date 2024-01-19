@@ -11,10 +11,8 @@ import java.util.List;
 
 public class KeyboardFactory {
 
-    private final static InlineKeyboardButton MY_REMINDERS_BUTTON = createButton("📅 Мои напоминания", Constant.Callback.GO_TO_MY_REMINDERS);
+    private final static InlineKeyboardButton MY_REMINDERS_BUTTON = createButton("⏰ Мои напоминания", Constant.Callback.GO_TO_MY_REMINDERS);
     private final static InlineKeyboardButton CREATE_REMINDER_BUTTON = createButton("➕ Добавить напоминание", Constant.Callback.GO_TO_ADD_REMINDER);
-    private final static InlineKeyboardButton UPDATE_REMINDER_BUTTON = createButton("✏️Изменить напоминание", Constant.Callback.GO_TO_EDIT_REMINDER);
-    private final static InlineKeyboardButton REMOVE_REMINDER_BUTTON = createButton("❌ Удалить напоминание", Constant.Callback.GO_TO_DELETE_REMINDER);
     private final static InlineKeyboardButton BACK_BUTTON = createButton("⬅ Назад", Constant.Callback.GO_BACK);
     private final static InlineKeyboardButton MAIN_PAGE_BUTTON = createButton("🏠 На главную", Constant.Callback.GO_TO_MAIN);
 
@@ -50,12 +48,21 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(keyboard);
     }
 
-    public static InlineKeyboardMarkup withReminderMessage() {
-        List<InlineKeyboardButton> row1 = List.of(UPDATE_REMINDER_BUTTON);
-        List<InlineKeyboardButton> row2 = List.of(REMOVE_REMINDER_BUTTON);
-        List<InlineKeyboardButton> row3 = List.of(BACK_BUTTON);
+    public static InlineKeyboardMarkup withReminderMessage(Reminder reminder) {
+        List<InlineKeyboardButton> row1 = List.of(createButton("✏️ Изменить текст напоминания", Constant.Callback.GO_TO_EDIT_REMINDER_TEXT + reminder.getId()));
+        List<InlineKeyboardButton> row2 = List.of(createButton("📝 Изменить дату напоминания", Constant.Callback.GO_TO_EDIT_REMINDER_DATE + reminder.getId()));
+        List<InlineKeyboardButton> row3 = List.of(createButton("🕙 Изменить время напоминания", Constant.Callback.GO_TO_EDIT_REMINDER_TIME + reminder.getId()));
+        List<InlineKeyboardButton> row4 = List.of(createButton("❌ Удалить напоминание", Constant.Callback.GO_TO_CONFIRM_TO_DELETE_REMINDER + reminder.getId()));
+        List<InlineKeyboardButton> row5 = List.of(BACK_BUTTON);
 
-        return new InlineKeyboardMarkup(List.of(row1, row2, row3));
+        return new InlineKeyboardMarkup(List.of(row1, row2, row3, row4, row5));
+    }
+
+    public static InlineKeyboardMarkup withDeleteReminderConfirmation(Reminder reminder) {
+        List<InlineKeyboardButton> row1 = List.of(createButton("Да, удалить напоминание", Constant.Callback.GO_TO_CONFIRMED_DELETION + reminder.getId()));
+        List<InlineKeyboardButton> row2 = List.of(BACK_BUTTON);
+
+        return new InlineKeyboardMarkup(List.of(row1, row2));
     }
 
 

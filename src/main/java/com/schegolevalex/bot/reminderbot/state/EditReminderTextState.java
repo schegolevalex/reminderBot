@@ -12,14 +12,14 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
-public class WatchRemindersState extends AbstractState {
+public class EditReminderTextState extends AbstractState {
     private final ReminderService reminderService;
 
-    public WatchRemindersState(@Lazy ReminderBot bot,
-                               ReminderService reminderService) {
+    public EditReminderTextState(@Lazy ReminderBot bot, ReminderService reminderService) {
         super(bot);
         this.reminderService = reminderService;
     }
@@ -27,37 +27,43 @@ public class WatchRemindersState extends AbstractState {
     @Override
     public BotApiMethod<?> reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        List<Reminder> reminders = reminderService.getAllRemindersByChatId(chatId);
 
-        if (reminders.isEmpty())
+        String data = update.getCallbackQuery().getData();
+        String id = data.substring(data.length() - 36);
+        Optional<Reminder> mayBeReminder = reminderService.getReminderById(UUID.fromString(id));
+
+        if (mayBeReminder.isPresent()) {
+            Reminder reminder = mayBeReminder.get();
+            bot.getRemindersContext().put(chatId, reminder);
             return SendMessage.builder()
                     .chatId(chatId)
-                    .text(Constant.MY_REMINDERS + Constant.REMINDER_LIST_IS_EMPTY)
+                    .text(String.format(Constant.EDIT_REMINDER_TEXT_DESCRIPTION, reminder.getText()))
                     .replyMarkup(KeyboardFactory.withBackButton())
                     .build();
-        else
-            return SendMessage.builder()
-                    .chatId(chatId)
-                    .text(Constant.MY_REMINDERS)
-                    .replyMarkup(KeyboardFactory.withRemindersMessage(reminders))
-                    .build();
+        }
+
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text(Constant.UNKNOWN_REMINDER)
+                .replyMarkup(KeyboardFactory.withBackButton())
+                .build();
     }
 
     @Override
     public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-
-        if (update.hasCallbackQuery()) {
-            if (update.getCallbackQuery().getData().startsWith(Constant.Callback.GO_TO_MY_REMINDER))
-                bot.pushBotState(chatId, State.WATCH_REMINDER);
-            if (update.getCallbackQuery().getData().equals(Constant.Callback.GO_BACK))
-                bot.popBotState(chatId);
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            String newText = update.getMessage().getText();
+            Reminder editedReminder = bot.getRemindersContext().get(chatId);
+            editedReminder.setText(newText);
+            reminderService.saveReminder(editedReminder);
+            bot.pushBotState(chatId, State.SUCCESSFUL_EDITING);
         } else
             bot.pushBotState(chatId, State.WRONG_INPUT);
     }
 
     @Override
     public State getType() {
-        return State.WATCH_REMINDERS;
+        return State.EDIT_REMINDER_TEXT;
     }
 }

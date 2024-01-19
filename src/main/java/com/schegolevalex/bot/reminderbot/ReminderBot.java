@@ -40,9 +40,9 @@ public class ReminderBot extends TelegramWebhookBot {
     private final Map<Long, Stack<AbstractState>> userStatesMap = new HashMap<>();
     private final List<AbstractState> allPossiblesStates;
     @Getter
-    private final Map<Long, Reminder> tempReminders = new HashMap<>();
-    //    @Getter
-//    private final Map<Long, Reminder> messages = new HashMap<>(); //todo
+    private final Map<Long, Reminder> remindersContext = new HashMap<>();
+    @Getter
+    private final Map<Long, Reminder> messagesToEdit = new HashMap<>(); //todo
     private final ReminderService reminderService;
     private final ThreadPoolTaskScheduler taskScheduler;
 

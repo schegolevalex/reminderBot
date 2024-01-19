@@ -33,8 +33,8 @@ public class WrongInputState extends AbstractState {
 
         if (update.hasCallbackQuery())
             switch (update.getCallbackQuery().getData()) {
-                case (Constant.Callback.GO_TO_MY_REMINDERS) -> bot.pushBotState(chatId, State.WATCH_REMINDERS);
-                case (Constant.Callback.GO_TO_ADD_REMINDER) -> bot.pushBotState(chatId, State.ADD_REMINDER_TEXT);
+                case Constant.Callback.GO_TO_MY_REMINDERS -> bot.pushBotState(chatId, State.WATCH_REMINDERS);
+                case Constant.Callback.GO_TO_ADD_REMINDER -> bot.pushBotState(chatId, State.ADD_REMINDER_TEXT);
             }
         else
             bot.pushBotState(chatId, State.WRONG_INPUT);

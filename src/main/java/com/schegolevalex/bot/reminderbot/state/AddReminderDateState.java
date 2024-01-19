@@ -25,7 +25,7 @@ public class AddReminderDateState extends AbstractState {
     @Override
     public BotApiMethod<?> reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        String reminderText = bot.getTempReminders().get(chatId).getText();
+        String reminderText = bot.getRemindersContext().get(chatId).getText();
 
         return SendMessage.builder()
                 .chatId(chatId)
@@ -41,11 +41,11 @@ public class AddReminderDateState extends AbstractState {
 
         if (update.hasCallbackQuery())
             switch (update.getCallbackQuery().getData()) {
-                case (Constant.Callback.GO_BACK) -> bot.popBotState(chatId);
+                case Constant.Callback.GO_BACK -> bot.popBotState(chatId);
                 // case2..caseN
             }
         else if (update.hasMessage() && update.getMessage().hasText()) {
-            Reminder tempReminder = bot.getTempReminders().get(chatId);
+            Reminder tempReminder = bot.getRemindersContext().get(chatId);
             String text = update.getMessage().getText();
             LocalDate date;
             try {

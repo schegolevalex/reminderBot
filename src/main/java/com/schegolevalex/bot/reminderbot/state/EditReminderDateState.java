@@ -12,15 +12,17 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class WatchReminderState extends AbstractState {
+public class EditReminderDateState extends AbstractState {
     private final ReminderService reminderService;
 
-    public WatchReminderState(@Lazy ReminderBot bot,
-                              ReminderService reminderService) {
+    public EditReminderDateState(@Lazy ReminderBot bot, ReminderService reminderService) {
         super(bot);
         this.reminderService = reminderService;
     }
@@ -35,10 +37,11 @@ public class WatchReminderState extends AbstractState {
 
         if (mayBeReminder.isPresent()) {
             Reminder reminder = mayBeReminder.get();
+            bot.getRemindersContext().put(chatId, reminder);
             return SendMessage.builder()
                     .chatId(chatId)
-                    .text(reminder.toUserView())
-                    .replyMarkup(KeyboardFactory.withReminderMessage(reminder))
+                    .text(String.format(Constant.EDIT_REMINDER_DATE_DESCRIPTION, reminder.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))))
+                    .replyMarkup(KeyboardFactory.withBackButton())
                     .build();
         }
 
@@ -52,24 +55,24 @@ public class WatchReminderState extends AbstractState {
     @Override
     public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-
-        if (update.hasCallbackQuery()) {
-            if (update.getCallbackQuery().getData().startsWith(Constant.Callback.GO_TO_EDIT_REMINDER_TEXT))
-                bot.pushBotState(chatId, State.EDIT_REMINDER_TEXT);
-            if (update.getCallbackQuery().getData().startsWith(Constant.Callback.GO_TO_EDIT_REMINDER_DATE))
-                bot.pushBotState(chatId, State.EDIT_REMINDER_DATE);
-            if (update.getCallbackQuery().getData().startsWith(Constant.Callback.GO_TO_EDIT_REMINDER_TIME))
-                bot.pushBotState(chatId, State.EDIT_REMINDER_TIME);
-            if (update.getCallbackQuery().getData().startsWith(Constant.Callback.GO_TO_CONFIRM_TO_DELETE_REMINDER))
-                bot.pushBotState(chatId, State.CONFIRM_DELETE_REMINDER);
-            if (update.getCallbackQuery().getData().equals(Constant.Callback.GO_BACK))
-                bot.popBotState(chatId);
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            LocalDate newDate;
+            try {
+                newDate = LocalDate.parse(update.getMessage().getText(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            } catch (DateTimeParseException e) {
+                bot.pushBotState(chatId, State.WRONG_INPUT_DATE);
+                return;
+            }
+            Reminder editedReminder = bot.getRemindersContext().get(chatId);
+            editedReminder.setDate(newDate);
+            reminderService.saveReminder(editedReminder);
+            bot.pushBotState(chatId, State.SUCCESSFUL_EDITING);
         } else
             bot.pushBotState(chatId, State.WRONG_INPUT);
     }
 
     @Override
     public State getType() {
-        return State.WATCH_REMINDER;
+        return State.EDIT_REMINDER_DATE;
     }
 }

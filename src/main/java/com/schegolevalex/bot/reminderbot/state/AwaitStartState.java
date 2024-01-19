@@ -30,7 +30,7 @@ public class AwaitStartState extends AbstractState {
 
         if (update.hasMessage() && update.getMessage().hasText())
             switch (update.getMessage().getText()) {
-                case ("/start") -> bot.pushBotState(chatId, State.CHOOSE_FIRST_ACTION);
+                case "/start" -> bot.pushBotState(chatId, State.CHOOSE_FIRST_ACTION);
             }
         else
             bot.pushBotState(chatId, State.WRONG_INPUT);

@@ -21,7 +21,6 @@ public class ChooseFirstActionState extends AbstractState {
     public BotApiMethod<?> reply(Update update) {
         return SendMessage.builder()
                 .chatId(AbilityUtils.getChatId(update))
-//                .messageId(update.getMessage().getMessageId())
                 .text(Constant.CHOOSE_FIRST_ACTION_DESCRIPTION)
                 .replyMarkup(KeyboardFactory.withFirstActionMessage())
                 .build();
@@ -33,10 +32,8 @@ public class ChooseFirstActionState extends AbstractState {
 
         if (update.hasCallbackQuery())
             switch (update.getCallbackQuery().getData()) {
-                case (Constant.Callback.GO_TO_MY_REMINDERS) -> bot.pushBotState(chatId, State.WATCH_REMINDERS);
-                case (Constant.Callback.GO_TO_ADD_REMINDER) -> bot.pushBotState(chatId, State.ADD_REMINDER_TEXT);
-//                case (Constant.Callback.GO_TO_UPDATE_REMINDER) -> bot.pushBotState(chatId, State.UPDATE_REMINDER);
-//                case (Constant.Callback.GO_TO_DELETE_REMINDER) -> bot.pushBotState(chatId, State.DELETE_REMINDER);
+                case Constant.Callback.GO_TO_MY_REMINDERS -> bot.pushBotState(chatId, State.WATCH_REMINDERS);
+                case Constant.Callback.GO_TO_ADD_REMINDER -> bot.pushBotState(chatId, State.ADD_REMINDER_TEXT);
             }
         else
             bot.pushBotState(chatId, State.WRONG_INPUT);

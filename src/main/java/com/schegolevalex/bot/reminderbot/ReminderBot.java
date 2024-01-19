@@ -143,15 +143,16 @@ public class ReminderBot extends TelegramWebhookBot {
         if (reminderDateTime.isAfter(now)) {
             Instant instant = reminderDateTime.toInstant(ZoneOffset.of("+3"));
 
-            SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(reminder.getChatId()));
-            message.setText(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()));
+            SendMessage message = SendMessage.builder()
+                    .chatId(reminder.getChatId())
+                    .text(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()))
+                    .build();
 
             taskScheduler.schedule(() -> {
                 try {
                     execute(message);
                 } catch (TelegramApiException e) {
-                    log.error("************************** Unable to send reminder ***************************");
+                    log.error("************************** Unable to remind ***************************");
                 }
             }, instant);
         }

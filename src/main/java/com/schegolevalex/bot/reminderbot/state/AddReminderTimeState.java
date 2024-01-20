@@ -1,20 +1,21 @@
 package com.schegolevalex.bot.reminderbot.state;
 
-import com.schegolevalex.bot.reminderbot.Constant;
+import com.schegolevalex.bot.reminderbot.CustomReply;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
-import com.schegolevalex.bot.reminderbot.services.ReminderService;
+import com.schegolevalex.bot.reminderbot.service.ReminderService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import static com.schegolevalex.bot.reminderbot.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.Constant.Message;
 
 @Component
 public class AddReminderTimeState extends AbstractState {
@@ -27,16 +28,14 @@ public class AddReminderTimeState extends AbstractState {
     }
 
     @Override
-    public BotApiMethod<?> reply(Update update) {
+    public CustomReply reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         String reminderText = bot.getRemindersContext().get(chatId).getText();
         String date = bot.getRemindersContext().get(chatId).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        return SendMessage.builder()
-                .chatId(chatId)
-//                .messageId(update.getMessage().getMessageId())
+        return CustomReply.builder()
                 .text("Текст напоминания: \"" + reminderText + "\"\n" +
                         "Дата напоминания: " + date + "\"\n" +
-                        Constant.ADD_REMINDER_TIME_DESCRIPTION)
+                        Message.ADD_REMINDER_TIME_DESCRIPTION)
                 .replyMarkup(KeyboardFactory.withBackButton())
                 .build();
     }
@@ -45,12 +44,7 @@ public class AddReminderTimeState extends AbstractState {
     public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        if (update.hasCallbackQuery())
-            switch (update.getCallbackQuery().getData()) {
-                case (Constant.Callback.GO_BACK) -> bot.popBotState(chatId);
-                // case2..caseN
-            }
-        else if (update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             Reminder tempReminder = bot.getRemindersContext().get(chatId);
             String text = update.getMessage().getText();
             LocalTime time;
@@ -65,7 +59,9 @@ public class AddReminderTimeState extends AbstractState {
             reminderService.saveReminder(tempReminder);
             bot.remind(tempReminder);
             bot.pushBotState(chatId, State.SUCCESSFUL_ADDITION);
-        } else
+        } else if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Callback.GO_BACK))
+            bot.popBotState(chatId);
+        else
             bot.pushBotState(chatId, State.WRONG_INPUT_DATE);
     }
 

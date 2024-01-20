@@ -50,11 +50,11 @@
             <artifactId>telegrambots-abilities</artifactId>
             <version>6.8.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.joestelmach</groupId>-->
-<!--            <artifactId>natty</artifactId>-->
-<!--            <version>0.13</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.joestelmach</groupId>-->
+        <!--            <artifactId>natty</artifactId>-->
+        <!--            <version>0.13</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>

@@ -2,9 +2,8 @@ package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.config.BotConfiguration;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
-import com.schegolevalex.bot.reminderbot.services.ReminderService;
+import com.schegolevalex.bot.reminderbot.service.ReminderService;
 import com.schegolevalex.bot.reminderbot.state.AbstractState;
-import com.schegolevalex.bot.reminderbot.state.AwaitStartState;
 import com.schegolevalex.bot.reminderbot.state.State;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -19,9 +18,13 @@ import org.telegram.telegrambots.meta.ApiConstants;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.description.SetMyDescription;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -42,50 +45,83 @@ public class ReminderBot extends TelegramWebhookBot {
     @Getter
     private final Map<Long, Reminder> remindersContext = new HashMap<>();
     @Getter
-    private final Map<Long, Reminder> messagesToEdit = new HashMap<>(); //todo
+    private final Map<Long, Integer> messagesToEdit = new HashMap<>();
     private final ReminderService reminderService;
     private final ThreadPoolTaskScheduler taskScheduler;
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        getBotState(chatId).perform(update);
+
+        peekBotState(chatId).perform(update);
+        CustomReply reply = peekBotState(chatId).reply(update);
+
+        executeReply(chatId, reply);
+
+        if (update.hasMessage() && update.getMessage().hasText())
+            deleteUserMessage(update);
+        return null;
+    }
+
+    private void executeReply(Long chatId, CustomReply reply) {
+        Integer messageToEditId = this.messagesToEdit.get(chatId);
+
         try {
-            execute(getBotState(chatId).reply(update));
+            if (messageToEditId == null) {
+                SendMessage sendMessage = SendMessage.builder()
+                        .chatId(chatId)
+                        .text(reply.text())
+                        .replyMarkup(reply.replyMarkup())
+                        .build();
+                Message executedMessage = execute(sendMessage);
+                this.messagesToEdit.put(chatId, executedMessage.getMessageId());
+            } else {
+                EditMessageText editMessageText = EditMessageText.builder()
+                        .chatId(chatId)
+                        .messageId(messageToEditId)
+                        .text(reply.text())
+                        .replyMarkup(reply.replyMarkup())
+                        .build();
+                execute(editMessageText);
+            }
         } catch (TelegramApiException e) {
-            e.printStackTrace();
             log.error("*********** Не удалось отправить сообщение ************"); //todo
         }
-        return null;
     }
 
     private Stack<AbstractState> getBotStateStack(Long chatId) {
         Stack<AbstractState> stateStack;
-
         if (userStatesMap.get(chatId) == null || userStatesMap.get(chatId).empty()) {
             stateStack = new Stack<>();
-            stateStack.push(new AwaitStartState(this));
+            stateStack.push(findState(State.AWAIT_START));
             userStatesMap.put(chatId, stateStack);
-        } else stateStack = userStatesMap.get(chatId);
+        } else
+            stateStack = userStatesMap.get(chatId);
 
         return stateStack;
     }
 
-    private AbstractState getBotState(Long chatId) {
-        return getBotStateStack(chatId).peek();
+    public void pushBotState(Long chatId, State stateType) {
+        if (stateType == State.CHOOSE_FIRST_ACTION)
+            getBotStateStack(chatId).clear();
+        if (peekBotState(chatId).getType() != stateType) {
+            getBotStateStack(chatId).push(findState(stateType));
+        }
     }
 
-    public void pushBotState(Long chatId, State stateType) {
-        if (getBotState(chatId).getType() != stateType) {
-            getBotStateStack(chatId).push(this.allPossiblesStates.stream()
-                    .filter(state -> state.getType() == stateType)
-                    .findAny()
-                    .orElseThrow(RuntimeException::new));
-        }
+    private AbstractState peekBotState(Long chatId) {
+        return getBotStateStack(chatId).peek();
     }
 
     public void popBotState(Long chatId) {
         getBotStateStack(chatId).pop();
+    }
+
+    private AbstractState findState(State stateType) {
+        return this.allPossiblesStates.stream()
+                .filter(state -> state.getType() == stateType)
+                .findAny()
+                .orElseThrow(RuntimeException::new);
     }
 
     @Override
@@ -119,14 +155,14 @@ public class ReminderBot extends TelegramWebhookBot {
     @SneakyThrows
     private void setMyCommands() {
         List<BotCommand> botCommands = new ArrayList<>();
-        botCommands.add(new BotCommand("start", "нажми для начала общения"));
+        botCommands.add(new BotCommand("start", Constant.Message.START_COMMAND_DESCRIPTION));
         execute(new SetMyCommands(botCommands, null, null));
     }
 
     @PostConstruct
     @SneakyThrows
     private void setStartDescription() {
-        execute(new SetMyDescription(Constant.START_DESCRIPTION, "ru"));
+        execute(new SetMyDescription(Constant.Message.START_DESCRIPTION, "ru"));
     }
 
     @PostConstruct
@@ -145,7 +181,7 @@ public class ReminderBot extends TelegramWebhookBot {
 
             SendMessage message = SendMessage.builder()
                     .chatId(reminder.getChatId())
-                    .text(String.format(Constant.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()))
+                    .text(String.format(Constant.Message.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()))
                     .build();
 
             taskScheduler.schedule(() -> {
@@ -155,6 +191,17 @@ public class ReminderBot extends TelegramWebhookBot {
                     log.error("************************** Unable to remind ***************************");
                 }
             }, instant);
+        }
+    }
+
+    private void deleteUserMessage(Update update) {
+        try {
+            execute(DeleteMessage.builder()
+                    .chatId(AbilityUtils.getChatId(update))
+                    .messageId(update.getMessage().getMessageId())
+                    .build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 }

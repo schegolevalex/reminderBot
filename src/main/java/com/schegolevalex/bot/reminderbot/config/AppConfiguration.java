@@ -11,11 +11,6 @@ import java.util.Map;
 @Configuration
 public class AppConfiguration {
 
-//    @Bean
-//    public Map<Long, Stack<AbstractReplier>> userStatesMap() {
-//        return new HashMap<>();
-//    }
-
     @Bean
     public Map<Long, Reminder> tempReminders() {
         return new HashMap<>();

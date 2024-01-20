@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot.services;
+package com.schegolevalex.bot.reminderbot.service;
 
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
 

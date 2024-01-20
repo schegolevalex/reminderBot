@@ -1,19 +1,20 @@
 package com.schegolevalex.bot.reminderbot.state;
 
-import com.schegolevalex.bot.reminderbot.Constant;
+import com.schegolevalex.bot.reminderbot.CustomReply;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
-import com.schegolevalex.bot.reminderbot.services.ReminderService;
+import com.schegolevalex.bot.reminderbot.service.ReminderService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.schegolevalex.bot.reminderbot.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.Constant.Message;
 
 @Component
 public class ConfirmToDeleteReminderState extends AbstractState {
@@ -26,27 +27,22 @@ public class ConfirmToDeleteReminderState extends AbstractState {
     }
 
     @Override
-    public BotApiMethod<?> reply(Update update) {
-        Long chatId = AbilityUtils.getChatId(update);
-
+    public CustomReply reply(Update update) {
         String data = update.getCallbackQuery().getData();
         String id = data.substring(data.length() - 36);
         Optional<Reminder> mayBeReminder = reminderService.getReminderById(UUID.fromString(id));
 
         if (mayBeReminder.isPresent()) {
             Reminder reminder = mayBeReminder.get();
-            return SendMessage.builder()
-                    .chatId(chatId)
-                    .text(reminder.toUserView() + "\n" + Constant.DELETE_CONFIRMATION)
+            return CustomReply.builder()
+                    .text(reminder.toUserView() + "\n" + Message.DELETE_CONFIRMATION)
                     .replyMarkup(KeyboardFactory.withDeleteReminderConfirmation(reminder))
                     .build();
-        }
-
-        return SendMessage.builder()
-                .chatId(chatId)
-                .text(Constant.UNKNOWN_REMINDER)
-                .replyMarkup(KeyboardFactory.withBackButton())
-                .build();
+        } else
+            return CustomReply.builder()
+                    .text(Message.UNKNOWN_REMINDER)
+                    .replyMarkup(KeyboardFactory.withBackButton())
+                    .build();
     }
 
     @Override
@@ -54,8 +50,9 @@ public class ConfirmToDeleteReminderState extends AbstractState {
         Long chatId = AbilityUtils.getChatId(update);
 
         if (update.hasCallbackQuery()) {
-            if (update.getCallbackQuery().getData().startsWith(Constant.Callback.GO_TO_CONFIRMED_DELETION)) {
-                String data = update.getCallbackQuery().getData();
+            String data = update.getCallbackQuery().getData();
+
+            if (update.getCallbackQuery().getData().startsWith(Callback.GO_TO_CONFIRMED_DELETION)) {
                 String id = data.substring(data.length() - 36);
                 Optional<Reminder> mayBeReminder = reminderService.getReminderById(UUID.fromString(id));
 
@@ -66,7 +63,7 @@ public class ConfirmToDeleteReminderState extends AbstractState {
                     bot.pushBotState(chatId, State.WRONG_INPUT);
             }
 
-            if (update.getCallbackQuery().getData().equals(Constant.Callback.GO_BACK))
+            if (data.equals(Callback.GO_BACK))
                 bot.popBotState(chatId);
         } else
             bot.pushBotState(chatId, State.WRONG_INPUT);

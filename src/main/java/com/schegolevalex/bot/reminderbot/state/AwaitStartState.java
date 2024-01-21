@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Message;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class AwaitStartState extends AbstractState {
@@ -29,9 +29,9 @@ public class AwaitStartState extends AbstractState {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (update.getMessage().getText().equals("/start"))
-                bot.pushBotState(chatId, State.CHOOSE_FIRST_ACTION);
+                bot.pushState(chatId, State.CHOOSE_FIRST_ACTION);
         } else
-            bot.pushBotState(chatId, State.WRONG_INPUT);
+            bot.pushState(chatId, State.WRONG_INPUT);
     }
 
     @Override

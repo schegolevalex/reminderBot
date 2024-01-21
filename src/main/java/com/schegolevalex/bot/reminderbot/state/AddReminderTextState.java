@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Callback;
-import static com.schegolevalex.bot.reminderbot.Constant.Message;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class AddReminderTextState extends AbstractState {
@@ -36,11 +36,11 @@ public class AddReminderTextState extends AbstractState {
             tempReminder.setChatId(chatId);
             tempReminder.setText(update.getMessage().getText());
             bot.getRemindersContext().put(chatId, tempReminder);
-            bot.pushBotState(chatId, State.ADD_REMINDER_DATE);
+            bot.pushState(chatId, State.ADD_REMINDER_DATE);
         } else if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Callback.GO_BACK))
-            bot.popBotState(chatId);
+            bot.popState(chatId);
         else
-            bot.pushBotState(chatId, State.WRONG_INPUT);
+            bot.pushState(chatId, State.WRONG_INPUT);
     }
 
     @Override

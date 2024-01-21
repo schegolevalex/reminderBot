@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Callback;
-import static com.schegolevalex.bot.reminderbot.Constant.Message;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class ChooseFirstActionState extends AbstractState {
@@ -33,12 +33,12 @@ public class ChooseFirstActionState extends AbstractState {
         if (update.hasCallbackQuery()) {
             String data = update.getCallbackQuery().getData();
             if (data.equals(Callback.GO_TO_MY_REMINDERS)) {
-                bot.pushBotState(chatId, State.WATCH_REMINDERS);
+                bot.pushState(chatId, State.WATCH_REMINDERS);
             } else if (data.equals(Callback.GO_TO_ADD_REMINDER)) {
-                bot.pushBotState(chatId, State.ADD_REMINDER_TEXT);
+                bot.pushState(chatId, State.ADD_REMINDER_TEXT);
             }
         } else
-            bot.pushBotState(chatId, State.WRONG_INPUT);
+            bot.pushState(chatId, State.WRONG_INPUT);
     }
 
     @Override

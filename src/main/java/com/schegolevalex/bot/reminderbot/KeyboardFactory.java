@@ -8,14 +8,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Button;
-import static com.schegolevalex.bot.reminderbot.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Button;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
 
 public class KeyboardFactory {
 
     private final static InlineKeyboardButton MY_REMINDERS_BUTTON = createButton(Button.MY_REMINDERS, Callback.GO_TO_MY_REMINDERS);
     private final static InlineKeyboardButton CREATE_REMINDER_BUTTON = createButton(Button.ADD_REMINDER, Callback.GO_TO_ADD_REMINDER);
     private final static InlineKeyboardButton BACK_BUTTON = createButton(Button.BACK, Callback.GO_BACK);
+    private final static InlineKeyboardButton OK_BUTTON = createButton(Button.OK, Callback.OK);
     private final static InlineKeyboardButton MAIN_PAGE_BUTTON = createButton(Button.MAIN_PAGE, Callback.GO_TO_MAIN);
 
     public static InlineKeyboardMarkup withFirstActionMessage() {
@@ -66,9 +67,12 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(List.of(row1, row2));
     }
 
-
     public static InlineKeyboardMarkup withBackButton() {
         return new InlineKeyboardMarkup(List.of(List.of(BACK_BUTTON)));
+    }
+
+    public static InlineKeyboardMarkup withOkButton() {
+        return new InlineKeyboardMarkup(List.of(List.of(OK_BUTTON)));
     }
 
     public static InlineKeyboardMarkup withMainPageButton() {

@@ -13,8 +13,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Callback;
-import static com.schegolevalex.bot.reminderbot.Constant.Message;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class EditReminderTextState extends AbstractState {
@@ -53,11 +53,11 @@ public class EditReminderTextState extends AbstractState {
             Reminder editedReminder = bot.getRemindersContext().get(chatId);
             editedReminder.setText(newText);
             reminderService.saveReminder(editedReminder);
-            bot.pushBotState(chatId, State.SUCCESSFUL_EDITING);
+            bot.pushState(chatId, State.SUCCESSFUL_EDITING);
         } else if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Callback.GO_BACK))
-            bot.popBotState(chatId);
+            bot.popState(chatId);
         else
-            bot.pushBotState(chatId, State.WRONG_INPUT);
+            bot.pushState(chatId, State.WRONG_INPUT);
     }
 
     @Override

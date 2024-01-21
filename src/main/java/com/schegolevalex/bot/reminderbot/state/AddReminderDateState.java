@@ -13,8 +13,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Callback;
-import static com.schegolevalex.bot.reminderbot.Constant.Message;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class AddReminderDateState extends AbstractState {
@@ -45,15 +45,15 @@ public class AddReminderDateState extends AbstractState {
             try {
                 date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             } catch (DateTimeParseException e) {
-                bot.pushBotState(chatId, State.WRONG_INPUT_DATE);
+                bot.pushState(chatId, State.WRONG_INPUT_DATE);
                 return;
             }
             tempReminder.setDate(date);
-            bot.pushBotState(chatId, State.ADD_REMINDER_TIME);
+            bot.pushState(chatId, State.ADD_REMINDER_TIME);
         } else if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Callback.GO_BACK))
-            bot.popBotState(chatId);
+            bot.popState(chatId);
         else
-            bot.pushBotState(chatId, State.WRONG_INPUT_DATE);
+            bot.pushState(chatId, State.WRONG_INPUT_DATE);
     }
 
     @Override

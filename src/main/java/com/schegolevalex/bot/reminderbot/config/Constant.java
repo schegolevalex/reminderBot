@@ -1,4 +1,4 @@
-package com.schegolevalex.bot.reminderbot;
+package com.schegolevalex.bot.reminderbot.config;
 
 public interface Constant {
     interface Message {
@@ -25,7 +25,8 @@ public interface Constant {
         String REMINDER_MESSAGE = "Сегодня в %s Вы просили напомнить \"%s\"";
 
         String START_DESCRIPTION = "Привет, я ToDo-бот. Я помогу не забыть о важных вещах. " +
-                "Для начала общения нажмите кнопку \"ЗАПУСТИТЬ\"";
+                "Для начала общения нажмите кнопку \"Начать\" или напишите команду \"/start\"";
+
         String START_COMMAND_DESCRIPTION = "нажми для начала общения";
     }
 
@@ -40,6 +41,7 @@ public interface Constant {
         String GO_TO_CONFIRM_TO_DELETE_REMINDER = "/confirmToDeleteReminder/";
         String GO_TO_CONFIRMED_DELETION = "/confirmedDeletion/";
         String GO_BACK = "/back";
+        String OK = "/ok";
     }
 
     interface Button {
@@ -52,5 +54,6 @@ public interface Constant {
         String EDIT_REMINDER_TIME = "🕙 Изменить время напоминания";
         String DELETE_REMINDER = "❌ Удалить напоминание";
         String CONFIRM_TO_DELETE_REMINDER = "Да, удалить напоминание";
+        String OK = "OK";
     }
 }

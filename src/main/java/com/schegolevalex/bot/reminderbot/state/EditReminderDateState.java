@@ -1,9 +1,9 @@
 package com.schegolevalex.bot.reminderbot.state;
 
-import com.schegolevalex.bot.reminderbot.Constant;
 import com.schegolevalex.bot.reminderbot.CustomReply;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
+import com.schegolevalex.bot.reminderbot.config.Constant;
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import com.schegolevalex.bot.reminderbot.service.ReminderService;
 import org.springframework.context.annotation.Lazy;
@@ -17,7 +17,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Message;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class EditReminderDateState extends AbstractState {
@@ -57,17 +57,18 @@ public class EditReminderDateState extends AbstractState {
             try {
                 newDate = LocalDate.parse(update.getMessage().getText(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             } catch (DateTimeParseException e) {
-                bot.pushBotState(chatId, State.WRONG_INPUT_DATE);
+                bot.pushState(chatId, State.WRONG_INPUT_DATE);
                 return;
             }
             Reminder editedReminder = bot.getRemindersContext().get(chatId);
             editedReminder.setDate(newDate);
             reminderService.saveReminder(editedReminder);
-            bot.pushBotState(chatId, State.SUCCESSFUL_EDITING);
+            bot.remind(editedReminder);
+            bot.pushState(chatId, State.SUCCESSFUL_EDITING);
         } else if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Constant.Callback.GO_BACK))
-            bot.popBotState(chatId);
+            bot.popState(chatId);
         else
-            bot.pushBotState(chatId, State.WRONG_INPUT);
+            bot.pushState(chatId, State.WRONG_INPUT);
     }
 
     @Override

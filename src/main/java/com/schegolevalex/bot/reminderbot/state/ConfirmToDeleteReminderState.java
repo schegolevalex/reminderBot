@@ -13,8 +13,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.schegolevalex.bot.reminderbot.Constant.Callback;
-import static com.schegolevalex.bot.reminderbot.Constant.Message;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
+import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class ConfirmToDeleteReminderState extends AbstractState {
@@ -52,21 +52,21 @@ public class ConfirmToDeleteReminderState extends AbstractState {
         if (update.hasCallbackQuery()) {
             String data = update.getCallbackQuery().getData();
 
-            if (update.getCallbackQuery().getData().startsWith(Callback.GO_TO_CONFIRMED_DELETION)) {
+            if (data.startsWith(Callback.GO_TO_CONFIRMED_DELETION)) {
                 String id = data.substring(data.length() - 36);
                 Optional<Reminder> mayBeReminder = reminderService.getReminderById(UUID.fromString(id));
 
                 if (mayBeReminder.isPresent()) {
                     reminderService.deleteReminder(mayBeReminder.get().getId());
-                    bot.pushBotState(chatId, State.SUCCESSFUL_DELETION);
+                    bot.pushState(chatId, State.SUCCESSFUL_DELETION);
                 } else
-                    bot.pushBotState(chatId, State.WRONG_INPUT);
+                    bot.pushState(chatId, State.WRONG_INPUT);
             }
 
             if (data.equals(Callback.GO_BACK))
-                bot.popBotState(chatId);
+                bot.popState(chatId);
         } else
-            bot.pushBotState(chatId, State.WRONG_INPUT);
+            bot.pushState(chatId, State.WRONG_INPUT);
     }
 
     @Override

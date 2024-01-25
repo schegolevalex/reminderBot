@@ -44,16 +44,13 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
+        log.info("Received update: {}", update);
         Long chatId = AbilityUtils.getChatId(update);
 
-        log.info("Received update: {}", update);
-
         peekState(chatId).perform(update);
-        CustomReply reply = peekState(chatId).reply(update);
+        executeReply(chatId, peekState(chatId).reply(update));
+        deleteUserMessage(update);
 
-        executeReply(chatId, reply);
-
-        executeDeleteUserMessage(update);
         return null;
     }
 
@@ -146,7 +143,7 @@ public class ReminderBot extends TelegramWebhookBot {
         reminderService.getAllReminders().forEach(this::remind); // todo разобраться со временем и вытащить из базы сразу только то, что нужно
     }
 
-    private void executeDeleteUserMessage(Update update) {
+    private void deleteUserMessage(Update update) {
         try {
             if (update.hasMessage())
                 execute(DeleteMessage.builder()

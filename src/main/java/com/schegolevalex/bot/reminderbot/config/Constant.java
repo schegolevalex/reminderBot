@@ -6,7 +6,7 @@ public interface Constant {
         String CHOOSE_FIRST_ACTION_DESCRIPTION = "Выберите действие:";
         String ADD_REMINDER_TEXT_DESCRIPTION = "📝 Напишите, о чем Вам напомнить?";
         String EDIT_REMINDER_TEXT_DESCRIPTION = "📝 Предыдущий текст напоминания \"%s\".\nВведите новый текст для напоминания:";
-        String ADD_REMINDER_DATE_DESCRIPTION = "📅 Когда Вам напомнить?\nВведите дату в формате \"ДД.ММ.ГГГГ\":";
+        String ADD_REMINDER_DATE_DESCRIPTION = "📅 Когда Вам напомнить?\nВыберите дату:";
         String EDIT_REMINDER_DATE_DESCRIPTION = "📅 Предыдущая дата напоминания \"%s\".\nВведите новую дату для напоминания в формате \"ДД.ММ.ГГГГ\":";
         String ADD_REMINDER_TIME_DESCRIPTION = "🕙 Во сколько Вам напомнить?\nВведите время в формате \"ЧЧ:ММ\":";
         String EDIT_REMINDER_TIME_DESCRIPTION = "🕙 Предыдущее время напоминания \"%s\".\nВведите новое время для напоминания в формате \"ЧЧ:ММ\":";
@@ -42,6 +42,16 @@ public interface Constant {
         String GO_TO_CONFIRMED_DELETION = "/confirmedDeletion/";
         String GO_BACK = "/back";
         String OK = "/ok";
+        String EMPTY = "/empty";
+        String[] DAYS = new String[]{"/monday", "/tuesday", "/wednesday", "/thursday", "/friday", "/saturday", "/sunday"};
+
+        String DATE = "/date/";
+        String TODAY = "/today";
+        String TOMORROW = "/tomorrow";
+        String DAY_AFTER_TOMORROW = "/dayAfterTomorrow";
+
+        String PREVIOUS_MONTH = "/previousMonth/";
+        String NEXT_MONTH = "/nextMonth/";
     }
 
     interface Button {
@@ -55,5 +65,6 @@ public interface Constant {
         String DELETE_REMINDER = "❌ Удалить напоминание";
         String CONFIRM_TO_DELETE_REMINDER = "Да, удалить напоминание";
         String OK = "OK";
+        String[] DAYS_OF_WEEK = new String[]{"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"};
     }
 }

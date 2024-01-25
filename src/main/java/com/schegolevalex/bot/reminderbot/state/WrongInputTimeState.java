@@ -39,7 +39,7 @@ public class WrongInputTimeState extends AbstractState {
         Long chatId = AbilityUtils.getChatId(update);
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            Reminder tempReminder = bot.getRemindersContext().get(chatId);
+            Reminder tempReminder = bot.getChatContext(chatId).getTempReminder();
             String text = update.getMessage().getText();
             LocalTime time;
             try {

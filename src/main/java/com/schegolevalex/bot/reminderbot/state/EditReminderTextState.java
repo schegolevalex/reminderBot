@@ -33,7 +33,7 @@ public class EditReminderTextState extends AbstractState {
 
         if (mayBeReminder.isPresent()) {
             Reminder reminder = mayBeReminder.get();
-            bot.getRemindersContext().put(AbilityUtils.getChatId(update), reminder);
+            bot.getChatContext(AbilityUtils.getChatId(update)).setTempReminder(reminder);
             return CustomReply.builder()
                     .text(String.format(Message.EDIT_REMINDER_TEXT_DESCRIPTION, reminder.getText()))
                     .replyMarkup(KeyboardFactory.withBackButton())
@@ -50,7 +50,7 @@ public class EditReminderTextState extends AbstractState {
         Long chatId = AbilityUtils.getChatId(update);
         if (update.hasMessage() && update.getMessage().hasText()) {
             String newText = update.getMessage().getText();
-            Reminder editedReminder = bot.getRemindersContext().get(chatId);
+            Reminder editedReminder = bot.getChatContext(chatId).getTempReminder();
             editedReminder.setText(newText);
             reminderService.saveReminder(editedReminder);
             bot.pushState(chatId, State.SUCCESSFUL_EDITING);

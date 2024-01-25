@@ -35,7 +35,7 @@ public class EditReminderTimeState extends AbstractState {
 
         if (mayBeReminder.isPresent()) {
             Reminder reminder = mayBeReminder.get();
-            bot.getRemindersContext().put(AbilityUtils.getChatId(update), reminder);
+            bot.getChatContext(AbilityUtils.getChatId(update)).setTempReminder(reminder);
             return CustomReply.builder()
                     .text(String.format(Message.EDIT_REMINDER_TIME_DESCRIPTION, reminder.getTime()))
                     .replyMarkup(KeyboardFactory.withBackButton())
@@ -58,7 +58,7 @@ public class EditReminderTimeState extends AbstractState {
                 bot.pushState(chatId, State.WRONG_INPUT_TIME);
                 return;
             }
-            Reminder editedReminder = bot.getRemindersContext().get(chatId);
+            Reminder editedReminder = bot.getChatContext(chatId).getTempReminder();
             editedReminder.setTime(newTime);
             reminderService.saveReminder(editedReminder);
             bot.remind(editedReminder);

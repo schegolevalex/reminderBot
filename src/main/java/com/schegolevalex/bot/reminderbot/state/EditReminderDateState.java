@@ -36,7 +36,7 @@ public class EditReminderDateState extends AbstractState {
 
         if (mayBeReminder.isPresent()) {
             Reminder reminder = mayBeReminder.get();
-            bot.getRemindersContext().put(AbilityUtils.getChatId(update), reminder);
+            bot.getChatContext(AbilityUtils.getChatId(update)).setTempReminder(reminder);
             return CustomReply.builder()
                     .text(String.format(Message.EDIT_REMINDER_DATE_DESCRIPTION, reminder.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))))
                     .replyMarkup(KeyboardFactory.withBackButton())
@@ -60,7 +60,7 @@ public class EditReminderDateState extends AbstractState {
                 bot.pushState(chatId, State.WRONG_INPUT_DATE);
                 return;
             }
-            Reminder editedReminder = bot.getRemindersContext().get(chatId);
+            Reminder editedReminder = bot.getChatContext(chatId).getTempReminder();
             editedReminder.setDate(newDate);
             reminderService.saveReminder(editedReminder);
             bot.remind(editedReminder);

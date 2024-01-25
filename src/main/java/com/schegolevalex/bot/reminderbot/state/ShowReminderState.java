@@ -30,7 +30,7 @@ public class ShowReminderState extends AbstractState {
 
         if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Callback.OK)) {
             bot.popState(chatId);
-            Integer idToDelete = bot.getMessagesWithReminderToDelete().get(chatId);
+            Integer idToDelete = bot.getChatContext(chatId).getMessageIdToDelete();
             if (idToDelete != null) {
                 try {
                     bot.execute(DeleteMessage.builder()

@@ -23,7 +23,7 @@ public class SuccessfulAdditionState extends AbstractState {
 
     @Override
     public CustomReply reply(Update update) {
-        Reminder reminder = bot.getRemindersContext().get(AbilityUtils.getChatId(update));
+        Reminder reminder = bot.getChatContext(AbilityUtils.getChatId(update)).getTempReminder();
         return CustomReply.builder()
                 .text(String.format(Message.SUCCESSFUL_ADDITION,
                         reminder.getText(),

@@ -35,7 +35,7 @@ public class AddReminderTextState extends AbstractState {
             Reminder tempReminder = new Reminder();
             tempReminder.setChatId(chatId);
             tempReminder.setText(update.getMessage().getText());
-            bot.getRemindersContext().put(chatId, tempReminder);
+            bot.getChatContext(chatId).setTempReminder(tempReminder);
             bot.pushState(chatId, State.ADD_REMINDER_DATE);
         } else if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Callback.GO_BACK))
             bot.popState(chatId);

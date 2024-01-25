@@ -26,7 +26,7 @@ public class AddReminderDateState extends AbstractState {
     @Override
     public CustomReply reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
-        String reminderText = bot.getRemindersContext().get(chatId).getText();
+        String reminderText = bot.getChatContext(chatId).getTempReminder().getText();
 
         return CustomReply.builder()
                 .text("Текст напоминания: \"" + reminderText + "\"\n" + Message.ADD_REMINDER_DATE_DESCRIPTION)
@@ -39,7 +39,7 @@ public class AddReminderDateState extends AbstractState {
         Long chatId = AbilityUtils.getChatId(update);
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            Reminder tempReminder = bot.getRemindersContext().get(chatId);
+            Reminder tempReminder = bot.getChatContext(chatId).getTempReminder();
             String text = update.getMessage().getText();
             LocalDate date;
             try {

@@ -3,15 +3,12 @@ package com.schegolevalex.bot.reminderbot.state;
 import com.schegolevalex.bot.reminderbot.CustomReply;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
-import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
 import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
@@ -27,10 +24,17 @@ public class AddReminderDateState extends AbstractState {
     public CustomReply reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         String reminderText = bot.getChatContext(chatId).getTempReminder().getText();
+        LocalDate targetDate = LocalDate.now();
+
+        if (update.hasCallbackQuery()) {
+            String data = update.getCallbackQuery().getData();
+            if (data.startsWith(Callback.PREVIOUS_MONTH) || data.startsWith(Callback.NEXT_MONTH))
+                targetDate = LocalDate.parse(data.substring(data.length() - 10));
+        }
 
         return CustomReply.builder()
                 .text("Текст напоминания: \"" + reminderText + "\"\n" + Message.ADD_REMINDER_DATE_DESCRIPTION)
-                .replyMarkup(KeyboardFactory.withBackButton())
+                .replyMarkup(KeyboardFactory.withCalendar(targetDate))
                 .build();
     }
 
@@ -38,22 +42,27 @@ public class AddReminderDateState extends AbstractState {
     public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            Reminder tempReminder = bot.getChatContext(chatId).getTempReminder();
-            String text = update.getMessage().getText();
-            LocalDate date;
-            try {
-                date = LocalDate.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            } catch (DateTimeParseException e) {
-                bot.pushState(chatId, State.WRONG_INPUT_DATE);
-                return;
+        if (update.hasCallbackQuery()) {
+            String data = update.getCallbackQuery().getData();
+
+            if (data.equals(Callback.GO_BACK)) {
+                bot.popState(chatId);
+            } else if (data.startsWith(Callback.DATE)) {
+                LocalDate date = LocalDate.parse(data.substring(data.length() - 10));
+                bot.getChatContext(chatId).getTempReminder().setDate(date);
+                bot.pushState(chatId, State.ADD_REMINDER_TIME);
+            } else if (data.equals(Callback.TODAY)) {
+                bot.getChatContext(chatId).getTempReminder().setDate(LocalDate.now());
+                bot.pushState(chatId, State.ADD_REMINDER_TIME);
+            } else if (data.equals(Callback.TOMORROW)) {
+                bot.getChatContext(chatId).getTempReminder().setDate(LocalDate.now().plusDays(1));
+                bot.pushState(chatId, State.ADD_REMINDER_TIME);
+            } else if (data.equals(Callback.DAY_AFTER_TOMORROW)) {
+                bot.getChatContext(chatId).getTempReminder().setDate(LocalDate.now().plusDays(2));
+                bot.pushState(chatId, State.ADD_REMINDER_TIME);
             }
-            tempReminder.setDate(date);
-            bot.pushState(chatId, State.ADD_REMINDER_TIME);
-        } else if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Callback.GO_BACK))
-            bot.popState(chatId);
-        else
-            bot.pushState(chatId, State.WRONG_INPUT_DATE);
+        } else
+            bot.pushState(chatId, State.WRONG_INPUT);
     }
 
     @Override

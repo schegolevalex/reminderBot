@@ -32,6 +32,8 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
 
+import static com.schegolevalex.bot.reminderbot.config.Constant.Command;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -46,6 +48,9 @@ public class ReminderBot extends TelegramWebhookBot {
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         log.info("Received update: {}", update);
         Long chatId = AbilityUtils.getChatId(update);
+
+        if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText().equals(Command.START))
+            getStateStack(chatId).clear();
 
         peekState(chatId).perform(update);
         executeReply(chatId, peekState(chatId).reply(update));
@@ -82,29 +87,35 @@ public class ReminderBot extends TelegramWebhookBot {
 
     public void remind(Reminder reminder) {
         Instant remindAt = reminder.getDate().atTime(reminder.getTime()).toInstant(ZoneOffset.ofHours(3));
+        long chatId = reminder.getChatId();
+        UUID reminderId = reminder.getId();
+
+        if (this.context.containsKey(chatId) && this.context.get(chatId).getFutureMap().containsKey(reminderId))
+            this.context.get(chatId).getFutureMap().get(reminderId).cancel(false);
 
         if (remindAt.isAfter(Instant.now())) {
-            taskScheduler.schedule(() -> {
-                long chatId = reminder.getChatId();
+            Runnable task = () -> {
                 pushState(chatId, State.SHOW_REMINDER);
-                SendMessage sendMessage = SendMessage.builder()
-                        .chatId(chatId)
-                        .text(String.format(Constant.Message.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()))
-                        .replyMarkup(KeyboardFactory.withOkButton())
-                        .build();
                 try {
-                    Message executed = execute(sendMessage);
+                    Message executed = execute(SendMessage.builder()
+                            .chatId(chatId)
+                            .text(String.format(Constant.Message.REMINDER_MESSAGE, reminder.getTime(), reminder.getText()))
+                            .replyMarkup(KeyboardFactory.withOkButton())
+                            .build());
                     this.context.get(chatId).setMessageIdToDelete(executed.getMessageId());
+                    this.context.get(chatId).getFutureMap().remove(reminderId);
                 } catch (TelegramApiException e) {
                     log.error("*********** Не удалось отправить сообщение ************"); //todo
                 }
-            }, remindAt);
+            };
+
+            this.context.get(chatId).getFutureMap().put(reminderId, taskScheduler.schedule(task, remindAt));
         }
     }
 
     private Stack<AbstractState> getStateStack(Long chatId) {
         Stack<AbstractState> stateStack;
-        if (context.get(chatId) == null || context.get(chatId).getStateStack() == null) {
+        if (context.get(chatId) == null || context.get(chatId).getStateStack() == null || context.get(chatId).getStateStack().isEmpty()) {
             stateStack = new Stack<>();
             stateStack.push(findState(State.AWAIT_START));
             context.put(chatId, new ChatContext(stateStack));

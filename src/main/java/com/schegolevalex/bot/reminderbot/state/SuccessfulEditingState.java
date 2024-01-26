@@ -21,7 +21,7 @@ public class SuccessfulEditingState extends AbstractState {
     @Override
     public CustomReply reply(Update update) {
         return CustomReply.builder()
-                .text(Message.SUCCESSFUL_EDITING)
+                .text(Message.SUCCESSFUL_EDITING + "\n" + bot.getChatContext(AbilityUtils.getChatId(update)).getTempReminder().toUserView())
                 .replyMarkup(KeyboardFactory.withMainPageButton())
                 .build();
     }
@@ -30,9 +30,13 @@ public class SuccessfulEditingState extends AbstractState {
     public void perform(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
 
-        if (update.hasCallbackQuery() && update.getCallbackQuery().getData().equals(Constant.Callback.GO_TO_MAIN))
-            bot.pushState(chatId, State.CHOOSE_FIRST_ACTION);
-        else
+        if (update.hasCallbackQuery()) {
+            String data = update.getCallbackQuery().getData();
+            if (data.equals(Constant.Callback.GO_TO_MAIN))
+                bot.pushState(chatId, State.CHOOSE_FIRST_ACTION);
+            else if (data.equals(Constant.Callback.GO_BACK))
+                bot.popState(chatId);
+        } else
             bot.pushState(chatId, State.WRONG_INPUT);
     }
 

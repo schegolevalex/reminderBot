@@ -3,6 +3,7 @@ package com.schegolevalex.bot.reminderbot.state;
 import com.schegolevalex.bot.reminderbot.CustomReply;
 import com.schegolevalex.bot.reminderbot.KeyboardFactory;
 import com.schegolevalex.bot.reminderbot.ReminderBot;
+import com.schegolevalex.bot.reminderbot.entity.Reminder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
@@ -28,7 +29,7 @@ public class AddReminderDateState extends AbstractState {
 
         if (update.hasCallbackQuery()) {
             String data = update.getCallbackQuery().getData();
-            if (data.startsWith(Callback.PREVIOUS_MONTH) || data.startsWith(Callback.NEXT_MONTH))
+            if (data.startsWith(Callback.CHANGE_MONTH))
                 targetDate = LocalDate.parse(data.substring(data.length() - 10));
         }
 
@@ -44,21 +45,12 @@ public class AddReminderDateState extends AbstractState {
 
         if (update.hasCallbackQuery()) {
             String data = update.getCallbackQuery().getData();
+            Reminder tempReminder = bot.getChatContext(chatId).getTempReminder();
 
-            if (data.equals(Callback.GO_BACK)) {
+            if (data.equals(Callback.GO_BACK))
                 bot.popState(chatId);
-            } else if (data.startsWith(Callback.DATE)) {
-                LocalDate date = LocalDate.parse(data.substring(data.length() - 10));
-                bot.getChatContext(chatId).getTempReminder().setDate(date);
-                bot.pushState(chatId, State.ADD_REMINDER_TIME);
-            } else if (data.equals(Callback.TODAY)) {
-                bot.getChatContext(chatId).getTempReminder().setDate(LocalDate.now());
-                bot.pushState(chatId, State.ADD_REMINDER_TIME);
-            } else if (data.equals(Callback.TOMORROW)) {
-                bot.getChatContext(chatId).getTempReminder().setDate(LocalDate.now().plusDays(1));
-                bot.pushState(chatId, State.ADD_REMINDER_TIME);
-            } else if (data.equals(Callback.DAY_AFTER_TOMORROW)) {
-                bot.getChatContext(chatId).getTempReminder().setDate(LocalDate.now().plusDays(2));
+            else if (data.startsWith(Callback.DATE)) {
+                tempReminder.setDate(LocalDate.parse(data.substring(data.length() - 10)));
                 bot.pushState(chatId, State.ADD_REMINDER_TIME);
             }
         } else

@@ -11,6 +11,7 @@ import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
 import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
@@ -47,8 +48,12 @@ public class WatchRemindersState extends AbstractState {
 
         if (update.hasCallbackQuery()) {
             String data = update.getCallbackQuery().getData();
-            if (data.startsWith(Callback.GO_TO_MY_REMINDER))
+            if (data.startsWith(Callback.GO_TO_MY_REMINDER)) {
+                String id = data.substring(data.length() - 36);
+                reminderService.getReminderById(UUID.fromString(id))
+                        .ifPresent(reminder -> bot.getChatContext(chatId).setTempReminder(reminder));
                 bot.pushState(chatId, State.WATCH_REMINDER);
+            }
             if (data.equals(Callback.GO_BACK))
                 bot.popState(chatId);
         } else

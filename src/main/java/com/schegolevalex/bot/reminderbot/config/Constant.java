@@ -7,9 +7,9 @@ public interface Constant {
         String ADD_REMINDER_TEXT_DESCRIPTION = "📝 Напишите, о чем Вам напомнить?";
         String EDIT_REMINDER_TEXT_DESCRIPTION = "📝 Предыдущий текст напоминания \"%s\".\nВведите новый текст для напоминания:";
         String ADD_REMINDER_DATE_DESCRIPTION = "📅 Когда Вам напомнить?\nВыберите дату:";
-        String EDIT_REMINDER_DATE_DESCRIPTION = "📅 Предыдущая дата напоминания \"%s\".\nВведите новую дату для напоминания в формате \"ДД.ММ.ГГГГ\":";
-        String ADD_REMINDER_TIME_DESCRIPTION = "🕙 Во сколько Вам напомнить?\nВведите время в формате \"ЧЧ:ММ\":";
-        String EDIT_REMINDER_TIME_DESCRIPTION = "🕙 Предыдущее время напоминания \"%s\".\nВведите новое время для напоминания в формате \"ЧЧ:ММ\":";
+        String EDIT_REMINDER_DATE_DESCRIPTION = "📅 Предыдущая дата напоминания \"%s\".\nВыберите новую дату:";
+        String ADD_REMINDER_TIME_DESCRIPTION = "🕙 Во сколько Вам напомнить?\nВыберите время:";
+        String EDIT_REMINDER_TIME_DESCRIPTION = "🕙 Предыдущее время напоминания \"%s\".\nВыберите новое время:";
         String MY_REMINDERS = "Ваши напоминания:" + "\n";
 
         String UNKNOWN_REQUEST = "Не понимаю... Давайте заново.";
@@ -18,8 +18,8 @@ public interface Constant {
         String SUCCESSFUL_EDITING = "Напоминание отредактировано.";
         String SUCCESSFUL_DELETION = "Напоминание удалено.";
         String SUCCESSFUL_ADDITION = "Напоминание c текстом \"%s\" успешно создано. Напомню %s в %s";
-        String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод. Напоминаю, формат даты \"ДД.ММ.ГГГГ\":";
-        String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод. Напоминаю, формат времени \"ЧЧ:ММ\":";
+        String WRONG_DATE_FORMAT = "Не удалось распознать дату, повторите ввод";
+        String WRONG_TIME_FORMAT = "Не удалось распознать время, повторите ввод";
 
         String REMINDER_LIST_IS_EMPTY = "У Вас нет напоминаний.";
         String REMINDER_MESSAGE = "Сегодня в %s Вы просили напомнить \"%s\"";
@@ -46,12 +46,10 @@ public interface Constant {
         String[] DAYS = new String[]{"/monday", "/tuesday", "/wednesday", "/thursday", "/friday", "/saturday", "/sunday"};
 
         String DATE = "/date/";
-        String TODAY = "/today";
-        String TOMORROW = "/tomorrow";
-        String DAY_AFTER_TOMORROW = "/dayAfterTomorrow";
-
-        String PREVIOUS_MONTH = "/previousMonth/";
-        String NEXT_MONTH = "/nextMonth/";
+        String CHANGE_MONTH = "/previousMonth/";
+        String TIME = "/time/";
+        String CHANGE_TIME = "/changeTime/";
+        String CHANGE_TIME_BACKSPACE = "/changeTimeBackspace/";
     }
 
     interface Button {
@@ -59,12 +57,16 @@ public interface Constant {
         String ADD_REMINDER = "➕ Добавить напоминание";
         String BACK = "⬅ Назад";
         String MAIN_PAGE = "🏠 На главную";
-        String EDIT_REMINDER_TEXT = "✏️ Изменить текст напоминания";
-        String EDIT_REMINDER_DATE = "📝 Изменить дату напоминания";
-        String EDIT_REMINDER_TIME = "🕙 Изменить время напоминания";
-        String DELETE_REMINDER = "❌ Удалить напоминание";
-        String CONFIRM_TO_DELETE_REMINDER = "Да, удалить напоминание";
+        String EDIT_REMINDER_TEXT = "✏️ Изменить текст";
+        String EDIT_REMINDER_DATE = "📝 Изменить дату";
+        String EDIT_REMINDER_TIME = "🕙 Изменить время";
+        String DELETE_REMINDER = "❌ Удалить";
+        String CONFIRM_TO_DELETE_REMINDER = "🆗 Да, удалить напоминание";
         String OK = "OK";
         String[] DAYS_OF_WEEK = new String[]{"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"};
+    }
+
+    interface Command {
+        String START = "/start";
     }
 }

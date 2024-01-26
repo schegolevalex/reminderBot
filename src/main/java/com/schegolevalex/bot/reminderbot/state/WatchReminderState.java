@@ -10,11 +10,9 @@ import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
-import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
 @Component
 public class WatchReminderState extends AbstractState {
@@ -28,21 +26,12 @@ public class WatchReminderState extends AbstractState {
 
     @Override
     public CustomReply reply(Update update) {
-        String data = update.getCallbackQuery().getData();
-        String id = data.substring(data.length() - 36);
-        Optional<Reminder> mayBeReminder = reminderService.getReminderById(UUID.fromString(id));
+        Reminder tempReminder = bot.getChatContext(AbilityUtils.getChatId(update)).getTempReminder();
 
-        if (mayBeReminder.isPresent()) {
-            Reminder reminder = mayBeReminder.get();
-            return CustomReply.builder()
-                    .text(reminder.toUserView())
-                    .replyMarkup(KeyboardFactory.withReminderMessage(reminder))
-                    .build();
-        } else
-            return CustomReply.builder()
-                    .text(Message.UNKNOWN_REMINDER)
-                    .replyMarkup(KeyboardFactory.withBackButton())
-                    .build();
+        return CustomReply.builder()
+                .text(tempReminder.toUserView())
+                .replyMarkup(KeyboardFactory.withReminderMessage(tempReminder))
+                .build();
     }
 
     @Override
@@ -61,6 +50,10 @@ public class WatchReminderState extends AbstractState {
                 bot.pushState(chatId, State.CONFIRM_DELETE_REMINDER);
             if (data.equals(Callback.GO_BACK))
                 bot.popState(chatId);
+
+            String id = data.substring(data.length() - 36);
+            reminderService.getReminderById(UUID.fromString(id))
+                    .ifPresent(reminder -> bot.getChatContext(chatId).setTempReminder(reminder));
         } else
             bot.pushState(chatId, State.WRONG_INPUT);
     }

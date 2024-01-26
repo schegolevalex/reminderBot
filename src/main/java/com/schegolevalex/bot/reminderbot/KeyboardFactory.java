@@ -1,6 +1,7 @@
 package com.schegolevalex.bot.reminderbot;
 
 import com.schegolevalex.bot.reminderbot.entity.Reminder;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -88,9 +89,12 @@ public class KeyboardFactory {
     public static InlineKeyboardMarkup withCalendar(LocalDate targetDate) {
         // first row
         List<InlineKeyboardButton> row1 = new ArrayList<>();
-        row1.add(createButton("<", Callback.PREVIOUS_MONTH + targetDate.minusMonths(1)));
-        row1.add(createButton(targetDate.format(DateTimeFormatter.ofPattern("MMMM yyyy").localizedBy(Locale.forLanguageTag("ru"))), Callback.EMPTY));
-        row1.add(createButton(">", Callback.NEXT_MONTH + targetDate.plusMonths(1)));
+        row1.add(createButton("<<", Callback.CHANGE_MONTH + targetDate.minusMonths(1)));
+        row1.add(createButton(targetDate.format(DateTimeFormatter
+//                .ofLocalizedDate(FormatStyle.SHORT)
+                .ofPattern("LLLL yyyy")
+                .localizedBy(Locale.forLanguageTag("ru"))), Callback.EMPTY));
+        row1.add(createButton(">>", Callback.CHANGE_MONTH + targetDate.plusMonths(1)));
 
         // second row, days of week
         List<InlineKeyboardButton> row2 = new ArrayList<>();
@@ -117,11 +121,11 @@ public class KeyboardFactory {
             calendarRows.add(buttons.subList(i * 7, i * 7 + 7));
         }
 
-        //create quick pick row
+        // quick pick row
         List<InlineKeyboardButton> quickPickRow = new ArrayList<>();
-        quickPickRow.add(createButton("Сегодня", Callback.TODAY));
-        quickPickRow.add(createButton("Завтра", Callback.TOMORROW));
-        quickPickRow.add(createButton("Послезавтра", Callback.DAY_AFTER_TOMORROW));
+        quickPickRow.add(createButton("Сегодня", Callback.DATE + LocalDate.now()));
+        quickPickRow.add(createButton("Завтра", Callback.DATE + LocalDate.now().plusDays(1)));
+        quickPickRow.add(createButton("Послезавтра", Callback.DATE + LocalDate.now().plusDays(2)));
 
         // create keyboard
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
@@ -132,6 +136,108 @@ public class KeyboardFactory {
         keyboard.add(List.of(BACK_BUTTON));
 
         return new InlineKeyboardMarkup(keyboard);
+    }
+
+//    public static InlineKeyboardMarkup withClock(LocalTime targetTime) {
+//        // first row
+//        List<InlineKeyboardButton> row1 = new ArrayList<>();
+//        row1.add(createButton("🔺", Callback.NEXT_HOUR + targetTime.plusHours(1L).format(DateTimeFormatter.ofPattern("HH:mm"))));
+//        row1.add(createButton("🔺", Callback.NEXT_MINUTE + targetTime.plusMinutes(1L).format(DateTimeFormatter.ofPattern("HH:mm"))));
+//
+//        // second row
+//        List<InlineKeyboardButton> row2 = new ArrayList<>();
+//        row2.add(createButton(targetTime.format(DateTimeFormatter.ofPattern("HH")), Callback.EMPTY));
+//        row2.add(createButton(targetTime.format(DateTimeFormatter.ofPattern("mm")), Callback.EMPTY));
+//
+//        // third row
+//        List<InlineKeyboardButton> row3 = new ArrayList<>();
+//        row3.add(createButton("🔻", Callback.PREVIOUS_HOUR + targetTime.minusHours(1L).format(DateTimeFormatter.ofPattern("HH:mm"))));
+//        row3.add(createButton("🔻", Callback.PREVIOUS_MINUTE + targetTime.minusMinutes(1L).format(DateTimeFormatter.ofPattern("HH:mm"))));
+//
+//        // create keyboard
+//        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+//        keyboard.add(row1);
+//        keyboard.add(row2);
+//        keyboard.add(row3);
+//        keyboard.add(List.of(createButton("✅ Подтвердить", Callback.TIME + targetTime.format(DateTimeFormatter.ofPattern("HH:mm")))));
+//        keyboard.add(List.of(BACK_BUTTON));
+//
+//        return new InlineKeyboardMarkup(keyboard);
+//    }
+
+//    public static ReplyKeyboard withClock2(LocalTime targetTime) {
+//        KeyboardRow row1 = new KeyboardRow();
+//        row1.add(new KeyboardButton("1"));
+//        row1.add(new KeyboardButton("2"));
+//        row1.add(new KeyboardButton("3"));
+//
+//        KeyboardRow row2 = new KeyboardRow();
+//        row2.add(new KeyboardButton("4"));
+//        row2.add(new KeyboardButton("5"));
+//        row2.add(new KeyboardButton("6"));
+//
+//        KeyboardRow row3 = new KeyboardRow();
+//        row3.add(new KeyboardButton("7"));
+//        row3.add(new KeyboardButton("8"));
+//        row3.add(new KeyboardButton("9"));
+//
+//        return new ReplyKeyboardMarkup(List.of(row1, row2, row3));
+//    }
+
+    public static InlineKeyboardMarkup withClock(String[] targetTime) {
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(createButton(convertToEmoji(targetTime[0]) + convertToEmoji(targetTime[1]) + ":"
+                + convertToEmoji(targetTime[2]) + convertToEmoji(targetTime[3]), Callback.EMPTY));
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(createButton("1", Callback.CHANGE_TIME + 1));
+        row2.add(createButton("2", Callback.CHANGE_TIME + 2));
+        row2.add(createButton("3", Callback.CHANGE_TIME + 3));
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        row3.add(createButton("4", Callback.CHANGE_TIME + 4));
+        row3.add(createButton("5", Callback.CHANGE_TIME + 5));
+        row3.add(createButton("6", Callback.CHANGE_TIME + 6));
+
+        List<InlineKeyboardButton> row4 = new ArrayList<>();
+        row4.add(createButton("7", Callback.CHANGE_TIME + 7));
+        row4.add(createButton("8", Callback.CHANGE_TIME + 8));
+        row4.add(createButton("9", Callback.CHANGE_TIME + 9));
+
+        List<InlineKeyboardButton> row5 = new ArrayList<>();
+        row5.add(createButton("0", Callback.CHANGE_TIME + 0));
+        row5.add(createButton("◀\uFE0F", Callback.CHANGE_TIME_BACKSPACE));
+
+//        String time = Arrays.stream(targetTime).map(KeyboardFactory::convertToEmoji).collect(Collectors.joining(""));
+
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        keyboard.add(row1);
+        keyboard.add(row2);
+        keyboard.add(row3);
+        keyboard.add(row4);
+        keyboard.add(row5);
+        keyboard.add(List.of(createButton("✅ Подтвердить", Callback.TIME + String.join("", targetTime))));
+        keyboard.add(List.of(BACK_BUTTON));
+
+        return new InlineKeyboardMarkup(keyboard);
+    }
+
+    @NotNull
+    private static String convertToEmoji(String digit) {
+        return switch (digit) {
+            case "0" -> "0\uFE0F⃣";
+            case "1" -> "1\uFE0F⃣";
+            case "2" -> "2\uFE0F⃣";
+            case "3" -> "3\uFE0F⃣";
+            case "4" -> "4\uFE0F⃣";
+            case "5" -> "5\uFE0F⃣";
+            case "6" -> "6\uFE0F⃣";
+            case "7" -> "7\uFE0F⃣";
+            case "8" -> "8\uFE0F⃣";
+            case "9" -> "9\uFE0F⃣";
+            case "x" -> "\u274C";
+            default -> "-1";
+        };
     }
 
     private static InlineKeyboardButton createButton(String text, String callback) {

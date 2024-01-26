@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import static com.schegolevalex.bot.reminderbot.config.Constant.Callback;
 import static com.schegolevalex.bot.reminderbot.config.Constant.Message;
 
@@ -27,22 +24,11 @@ public class EditReminderTextState extends AbstractState {
 
     @Override
     public CustomReply reply(Update update) {
-        String data = update.getCallbackQuery().getData();
-        String id = data.substring(data.length() - 36);
-        Optional<Reminder> mayBeReminder = reminderService.getReminderById(UUID.fromString(id));
-
-        if (mayBeReminder.isPresent()) {
-            Reminder reminder = mayBeReminder.get();
-            bot.getChatContext(AbilityUtils.getChatId(update)).setTempReminder(reminder);
-            return CustomReply.builder()
-                    .text(String.format(Message.EDIT_REMINDER_TEXT_DESCRIPTION, reminder.getText()))
-                    .replyMarkup(KeyboardFactory.withBackButton())
-                    .build();
-        } else
-            return CustomReply.builder()
-                    .text(Message.UNKNOWN_REMINDER)
-                    .replyMarkup(KeyboardFactory.withBackButton())
-                    .build();
+        Reminder editedReminder = bot.getChatContext(AbilityUtils.getChatId(update)).getTempReminder();
+        return CustomReply.builder()
+                .text(String.format(Message.EDIT_REMINDER_TEXT_DESCRIPTION, editedReminder.getText()))
+                .replyMarkup(KeyboardFactory.withBackButton())
+                .build();
     }
 
     @Override

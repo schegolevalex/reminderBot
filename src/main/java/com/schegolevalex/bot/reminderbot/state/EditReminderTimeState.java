@@ -31,8 +31,6 @@ public class EditReminderTimeState extends AbstractState {
     public CustomReply reply(Update update) {
         Long chatId = AbilityUtils.getChatId(update);
         ChatContext chatContext = bot.getChatContext(chatId);
-        String reminderText = chatContext.getTempReminder().getText();
-        String date = chatContext.getTempReminder().getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 
         String[] targetTime = chatContext.getTargetTime();
 

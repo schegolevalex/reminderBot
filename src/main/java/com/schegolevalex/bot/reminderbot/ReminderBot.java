@@ -154,7 +154,10 @@ public class ReminderBot extends TelegramWebhookBot {
 
     @PostConstruct
     private void registerPreviousReminders() {
-        reminderService.getAllReminders().forEach(this::remind); // todo разобраться со временем и вытащить из базы сразу только то, что нужно
+        reminderService.getAllReminders().forEach(reminder -> {
+            this.context.put(reminder.getChatId(), new ChatContext(new Stack<>()));
+            remind(reminder);
+        }); // todo разобраться со временем и вытащить из базы сразу только то, что нужно
     }
 
     private void deleteUserMessage(Update update) {

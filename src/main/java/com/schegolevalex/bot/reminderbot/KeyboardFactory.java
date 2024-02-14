@@ -52,7 +52,7 @@ public class KeyboardFactory {
                 })
                 .map(List::of)
                 .forEach(keyboard::add);
-        keyboard.add(List.of(BACK_BUTTON));
+        keyboard.add(List.of(MAIN_PAGE_BUTTON));
 
         return new InlineKeyboardMarkup(keyboard);
     }

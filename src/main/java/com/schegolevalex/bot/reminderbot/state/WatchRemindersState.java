@@ -33,7 +33,7 @@ public class WatchRemindersState extends AbstractState {
         if (reminders.isEmpty())
             return CustomReply.builder()
                     .text(Message.MY_REMINDERS + Message.REMINDER_LIST_IS_EMPTY)
-                    .replyMarkup(KeyboardFactory.withBackButton())
+                    .replyMarkup(KeyboardFactory.withMainPageButton())
                     .build();
         else
             return CustomReply.builder()
@@ -54,8 +54,8 @@ public class WatchRemindersState extends AbstractState {
                         .ifPresent(reminder -> bot.getChatContext(chatId).setTempReminder(reminder));
                 bot.pushState(chatId, State.WATCH_REMINDER);
             }
-            if (data.equals(Callback.GO_BACK))
-                bot.popState(chatId);
+            if (data.equals(Callback.GO_TO_MAIN))
+                bot.pushState(chatId, State.CHOOSE_FIRST_ACTION);
         } else
             bot.pushState(chatId, State.WRONG_INPUT);
     }

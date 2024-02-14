@@ -60,10 +60,10 @@ public class ReminderBot extends TelegramWebhookBot {
     }
 
     private void executeReply(Long chatId, CustomReply reply) {
-        Integer messageToEditId = this.context.get(chatId).getMessageIdToEdit();
+        Integer messageIdToEdit = this.context.get(chatId).getMessageIdToEdit();
 
         try {
-            if (messageToEditId == null) {
+            if (messageIdToEdit == null) {
                 SendMessage sendMessage = SendMessage.builder()
                         .chatId(chatId)
                         .text(reply.text())
@@ -74,7 +74,7 @@ public class ReminderBot extends TelegramWebhookBot {
             } else {
                 EditMessageText editMessageText = EditMessageText.builder()
                         .chatId(chatId)
-                        .messageId(messageToEditId)
+                        .messageId(messageIdToEdit)
                         .text(reply.text())
                         .replyMarkup(reply.replyMarkup())
                         .build();
@@ -115,10 +115,13 @@ public class ReminderBot extends TelegramWebhookBot {
 
     private Stack<AbstractState> getStateStack(Long chatId) {
         Stack<AbstractState> stateStack;
-        if (context.get(chatId) == null || context.get(chatId).getStateStack() == null || context.get(chatId).getStateStack().isEmpty()) {
+        if (context.get(chatId) == null || context.get(chatId).getStateStack() == null) {
             stateStack = new Stack<>();
             stateStack.push(findState(State.AWAIT_START));
             context.put(chatId, new ChatContext(stateStack));
+        } else if (context.get(chatId).getStateStack().isEmpty()) {
+            stateStack = context.get(chatId).getStateStack();
+            stateStack.push(findState(State.AWAIT_START));
         } else
             stateStack = context.get(chatId).getStateStack();
         return stateStack;
